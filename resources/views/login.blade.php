@@ -38,12 +38,12 @@
           <div class="app-brand"><span class="highlight">Social Media</span> Integration</div>
           <div class="app-info">
 
-            <button type="button" class="btn btn-default btn-sm btn-social __instagram">
+            <a  href="https://www.instagram.com/oauth/authorize/?client_id=42d6172648ba4550b254c2aed5a2ba55&redirect_uri=http://localhost:8000/auth_instagram&scope=likes+comments+public_content+follower_list&response_type=code" type="button" class="btn btn-default btn-sm btn-social __instagram">
               <div class="info">
                 <i class="icon fa fa-instagram" aria-hidden="true"></i>
                 <span class="title">Instagram</span>
               </div>
-            </button>
+            </a>
           
           <button type="button" class="btn btn-default btn-sm btn-social __facebook">
               <div class="info">
