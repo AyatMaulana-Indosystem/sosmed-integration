@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Flat Admin V.3 - Free flat-design bootstrap administrator templates</title>
+    <title>Sosial Media Integration</title>
     
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="./assets/css/vendor.css">
@@ -13,8 +13,8 @@
     <link rel="stylesheet" type="text/css" href="./assets/css/theme/yellow.css">
   </head>
   <body>
-    <div class="app app-default">
-      <div class="app-container">
+    <div >
+      <div >
         <nav class="navbar navbar-default" id="navbar">
           <div class="container-fluid">
             <div class="navbar-collapse collapse in">
@@ -25,7 +25,6 @@
                   </button>
                 </li>
                 <li class="logo">
-                  <a class="navbar-brand" href="#"><span class="highlight">Flat v3</span> Admin</a>
                 </li>
                 <li>
                   <button type="button" class="navbar-toggle">
@@ -180,103 +179,75 @@
             </div>
           </div>
         </nav>
-      
+        
         <div class="row">
-          <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-            <a class="card card-banner card-green-light">
-              <div class="card-body">
-                <i class="icon fa fa-instagram fa-4x"></i>
-                <div class="content">
-                  <div class="title">Instagram Post</div>
-                  <div class="value">420</div>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-            <a class="card card-banner card-blue-light">
-              <div class="card-body">
-                <i class="icon fa fa-facebook fa-4x"></i>
-                <div class="content">
-                  <div class="title">Facebook Post</div>
-                  <div class="value">2453</div>
-                </div>
-              </div>
-            </a>
-          </div>
-          <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-            <a class="card card-banner card-orange-light">
-              <div class="card-body">
-                <i class="icon fa fa-twitter fa-4x"></i>
-                <div class="content">
-                  <div class="title">Twitter Post</div>
-                  <div class="value">50</div>
-                </div>
-              </div>
-            </a>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="card card-mini">
+          <div class="container-fluid">
+          <div class="col-xs-12">
+            <div class="card">
               <div class="card-header">
-                <div class="card-title">Last Statuses</div>
-                <ul class="card-action">
-                  <li>
-                    <a href="/">
-                      <i class="fa fa-refresh"></i>
-                    </a>
-                  </li>
-                </ul>
+                Your Post
               </div>
-              <div class="card-body no-padding table-responsive">
-                <table class="table card-table">
+              <div class="card-body no-padding">
+                {{-- <table class=" datatable table table-striped primary dataTable no-footer" cellspacing="0" width="100%" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info" style="width: 100%;">
+                  <thead>
+                    <tr role="row">
+                      <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Name: activate to sort column ascending" style="width: 99px;">Konten</th>
+                      <th style="widht:50px" class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 144px;">Media</th>
+                      <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Office: activate to sort column descending" style="width: 75px;" aria-sort="ascending">Waktu</th>
+                      <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 26px;">Sosmed</th>
+                      <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 75px;">Link</th>
+                  </thead>
+                  <tbody>                  
+                    @foreach ($data['instagram'] as $element)
+                      <tr role="row" class="odd">
+                        <td class=""><small>{{ $element->konten }}</small></td>
+                        <td class="" style="widht:50px"><small>{{ $element->media }}</small></td>
+                        <td class="sorting_1">{{ $element->waktu }}</td>
+                        <td>{{ $element->sosmed }}</td>
+                        <td>{{ $element->link }}</td>
+                      </tr>
+                    @endforeach
+                  </tbody>
+                </table> --}}
+
+                <table class="table">
                   <thead>
                     <tr>
                       <th>Konten</th>
-                      <th class="right">Waktu</th>
+                      <th style="width:50px">Media</th>
+                      <th>Waktu</th>
                       <th>Sosmed</th>
+                      <th>Link</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    <tr>
-                      <td>MicroSD 64Gb</td>
-                      <td class="right">12</td>
-                      <td><span class="badge badge-success badge-icon"><i class="fa fa-check" aria-hidden="true"></i><span>Complete</span></span></td>
-                    </tr>
-                    <tr>
-                      <td>MiniPC i5</td>
-                      <td class="right">5</td>
-                      <td><span class="badge badge-warning badge-icon"><i class="fa fa-clock-o" aria-hidden="true"></i><span>Pending</span></span></td>
-                    </tr>
-                    <tr>
-                      <td>Mountain Bike</td>
-                      <td class="right">1</td>
-                      <td><span class="badge badge-info badge-icon"><i class="fa fa-credit-card" aria-hidden="true"></i><span>Confirm Payment</span></span></td>
-                    </tr>
-                    <tr>
-                      <td>Notebook</td>
-                      <td class="right">10</td>
-                      <td><span class="badge badge-danger badge-icon"><i class="fa fa-times" aria-hidden="true"></i><span>Cancelled</span></span></td>
-                    </tr>
-                    <tr>
-                      <td>Raspberry Pi2</td>
-                      <td class="right">6</td>
-                      <td><span class="badge badge-primary badge-icon"><i class="fa fa-truck" aria-hidden="true"></i><span>Shipped</span></span></td>
-                    </tr>
-                    <tr>
-                      <td>Flashdrive 128Mb</td>
-                      <td class="right">40</td>
-                      <td><span class="badge badge-info badge-icon"><i class="fa fa-credit-card" aria-hidden="true"></i><span>Confirm Payment</span></span></td>
-                    </tr>
+                  <tbody class="width:100%">
+                    @foreach ($data['instagram'] as $element)
+                        <tr role="row" class="odd">
+                          <td class=""><small>{{ $element->konten }}</small></td>
+                          <td class="" style="width:10px !important"><small><img style="width:100px;height:100px" src="{{ $element->media }}"></small></td>
+                          <td class="sorting_1">{{ date('Y-M-d h:i:s',$element->waktu) }}</td>
+                          <td>Instagram</td>
+                          <td>{{ $element->link }}</td>
+                        </tr>
+                      @endforeach
                   </tbody>
                 </table>
-              </div>
             </div>
           </div>
         </div>
-        
-        <script type="text/javascript" src="./assets/js/vendor.js"></script>
-        <script type="text/javascript" src="./assets/js/app.js"></script>
-      </body>
-    </html>
+        </div>
+      </div>
+
+<script type="text/javascript" src="./assets/js/vendor.js"></script>
+<script type="text/javascript" src="./assets/js/app.js"></script>
+<script>
+$(function(){
+  // $('table').DataTable({
+  // "columnDefs": [
+  //   { "width": "20%", "targets": 0 }
+  // ]
+  // });
+})
+</script>
+</body>
+</html>
