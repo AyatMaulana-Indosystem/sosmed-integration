@@ -38,26 +38,98 @@
           <div class="app-brand"><span class="highlight">Social Media</span> Integration</div>
           <div class="app-info">
 
-            <a  href="https://www.instagram.com/oauth/authorize/?client_id=42d6172648ba4550b254c2aed5a2ba55&redirect_uri=http://localhost:8000/auth_instagram&scope=likes+comments+public_content+follower_list&response_type=code" type="button" class="btn btn-default btn-sm btn-social __instagram">
-              <div class="info">
-                <i class="icon fa fa-instagram" aria-hidden="true"></i>
-                <span class="title">Instagram</span>
-              </div>
-            </a>
-          
-          <button type="button" class="btn btn-default btn-sm btn-social __facebook">
-              <div class="info">
-                <i class="icon fa fa-facebook-official" aria-hidden="true"></i>
-                <span class="title">Facebook</span>
-              </div>
-            </button>
-            <button type="button" class="btn btn-default btn-sm btn-social __twitter">
-              <div class="info">
-                <i class="icon fa fa-twitter" aria-hidden="true"></i>
-                <span class="title">Twitter</span>
-              </div>
-            </button>
 
+            <div class="row">
+           
+            @if(Session::has('instagram'))
+              <div class="col-md-4">
+                <div class="card card-mini">
+                  <div class="card-header text-center">
+                    Instagram
+                  </div>
+                  <div class="card-body text-center">
+                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="{{ Session::get('instagram')['user']['profile_picture'] }}">
+                    <div class="app-title">
+                      {{-- <div class="title"><span class="highlight">Ayat Maulana</span></div> --}}
+                      <br>
+                      <h4 class="media-heading"><a href="{{ url('/history') }}">{{ Session::get('instagram')['user']['username'] }}</a></h4>
+                      <br>
+                      <span class="badge badge-success badge-icon"><i class="fa fa-circle" aria-hidden="true"></i><span>Connected</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              @else
+              <div class="col-md-4">
+                <a href="https://www.instagram.com/oauth/authorize/?client_id=42d6172648ba4550b254c2aed5a2ba55&redirect_uri=http://localhost:8000/auth_instagram&scope=likes+comments+public_content+follower_list&response_type=code" type="button" class="btn btn-default btn-sm btn-social __instagram">
+                  <div class="info">
+                    <i class="icon fa fa-instagram" aria-hidden="true"></i>
+                    <span class="title">Connect Instagram</span>
+                  </div>
+                </a>
+              </div>
+            @endif
+
+                        @if(Session::has('facebook'))
+              <div class="col-md-4">
+                <div class="card card-mini">
+                  <div class="card-header text-center">
+                    Facebook
+                  </div>
+                  <div class="card-body text-center">
+                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="../assets/images/profile.png">
+                    <div class="app-title">
+                      {{-- <div class="title"><span class="highlight">Ayat Maulana</span></div> --}}
+                      <br>
+                      <h4 class="media-heading">Ayat Maulana</h4>
+                      <br>
+                      <span class="badge badge-success badge-icon"><i class="fa fa-circle" aria-hidden="true"></i><span>Connected</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              @else
+              <div class="col-md-4">
+                <button type="button" class="btn btn-default btn-sm btn-social __facebook">
+                    <div class="info">
+                      <i class="icon fa fa-facebook-official" aria-hidden="true"></i>
+                      <span class="title">Connect Facebook</span>
+                    </div>
+                </button>
+              </div>
+            @endif
+
+                        @if(Session::has('twitter'))
+              <div class="col-md-4">
+                <div class="card card-mini">
+                  <div class="card-header text-center">
+                    Twitter
+                  </div>
+                  <div class="card-body text-center">
+                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="../assets/images/profile.png">
+                    <div class="app-title">
+                      {{-- <div class="title"><span class="highlight">Ayat Maulana</span></div> --}}
+                      <br>
+                      <h4 class="media-heading">Ayat Maulana</h4>
+                      <br>
+                      <span class="badge badge-success badge-icon"><i class="fa fa-circle" aria-hidden="true"></i><span>Connected</span></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              @else
+              <div class="col-md-4">
+                <button type="button" class="btn btn-default btn-sm btn-social __twitter">
+                  <div class="info">
+                    <i class="icon fa fa-twitter" aria-hidden="true"></i>
+                    <span class="title">Connect Twitter</span>
+                  </div>
+                </button>
+              </div>
+            @endif
+
+            </div>
+            
 
             {{-- <ul class="list">
               <li>
