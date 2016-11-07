@@ -24,3 +24,14 @@ Route::get('/auth_instagram', 'Instagram_Controller@auth');
 Route::get('/history','HistoryController@index');
 
 Route::get('/in','Instagram_Controller@index');
+
+// Facebook
+
+Route::get('/auth_facebook','Facebook_Controller@auth');
+Route::get('/auth_facebook/callback','Facebook_Controller@callback');
+Route::get('/facebook','Facebook_Controller@facebook');
+
+
+Route::get('/cek', function(){
+	return Session::all();
+});

@@ -12,9 +12,25 @@ use Session;
 class HistoryController extends Controller
 {
 	public function index(){
-		$data_access = AccessTokenModel::where('value','=',Session::get('instagram')['access_token'])->get();
+		
+		$query = new SosmedModel;
 
-		$data['instagram'] = SosmedModel::where('user_id','=',$data_access[0]->id)->orderBy('waktu','DESC')->get();
+		if (Session::has('instagram')) {
+			$data_access = AccessTokenModel::where('value','=',Session::get('instagram')['access_token'])->get();
+
+			$query->where('user_id','=',$data_access[0]->id);
+		}
+
+		if (Session::has('facebook')) {
+			$data_access = AccessTokenModel::where('value','=',Session::get('facebook')->token)->get();
+
+			$query->where('user_id','=',$data_access[0]->id);
+		}
+
+		$data['sosmed'] = $query->get();
+
 		return view('history', compact('data'));
+
+		// return $data;
 	}
 }

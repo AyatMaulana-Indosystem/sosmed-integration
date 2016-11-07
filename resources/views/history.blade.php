@@ -221,11 +221,11 @@
                     </tr>
                   </thead>
                   <tbody class="width:100%">
-                    @foreach ($data['instagram'] as $element)
+                    @foreach ($data['sosmed'] as $element)
                         <tr role="row" class="odd">
                           <td class=""><small>{{ $element->konten }}</small></td>
                           <td class="" style="width:10px !important"><small><img style="width:100px;height:100px" src="{{ $element->media }}"></small></td>
-                          <td class="sorting_1">{{ date('Y-M-d h:i:s',$element->waktu) }}</td>
+                          <td class="sorting_1">{{ $element->waktu }}</td>
                           <td>Instagram</td>
                           <td>{{ $element->link }}</td>
                         </tr>
