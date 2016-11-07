@@ -70,32 +70,32 @@
               </div>
             @endif
 
-                        @if(Session::has('facebook'))
+            @if(Session::has('facebook'))
               <div class="col-md-4">
                 <div class="card card-mini">
                   <div class="card-header text-center">
                     Facebook
                   </div>
                   <div class="card-body text-center">
-                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="../assets/images/profile.png">
+                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="{{ Session::get('facebook')->avatar }}">
                     <div class="app-title">
                       {{-- <div class="title"><span class="highlight">Ayat Maulana</span></div> --}}
                       <br>
-                      <h4 class="media-heading">Ayat Maulana</h4>
+                      <h4 class="media-heading"><a href="{{ url('history') }}">{{ Session::get('facebook')['name'] }}</a></h4>
                       <br>
                       <span class="badge badge-success badge-icon"><i class="fa fa-circle" aria-hidden="true"></i><span>Connected</span></span>
                     </div>
                   </div>
                 </div>
               </div>
-              @else
+            @else
               <div class="col-md-4">
-                <button type="button" class="btn btn-default btn-sm btn-social __facebook">
+                <a href="{{ url('auth_facebook') }}" type="button" class="btn btn-default btn-sm btn-social __facebook">
                     <div class="info">
                       <i class="icon fa fa-facebook-official" aria-hidden="true"></i>
                       <span class="title">Connect Facebook</span>
                     </div>
-                </button>
+                </a>
               </div>
             @endif
 
