@@ -77,11 +77,11 @@
                     Facebook
                   </div>
                   <div class="card-body text-center">
-                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="{{ Session::get('facebook')->avatar }}">
+                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="{{ Session::get('facebook')['profile']['picture']['data']['url'] }}">
                     <div class="app-title">
                       {{-- <div class="title"><span class="highlight">Ayat Maulana</span></div> --}}
                       <br>
-                      <h4 class="media-heading"><a href="{{ url('history') }}">{{ Session::get('facebook')['name'] }}</a></h4>
+                      <h4 class="media-heading"><a href="{{ url('history') }}">{{ Session::get('facebook')['profile']['name'] }}</a></h4>
                       <br>
                       <span class="badge badge-success badge-icon"><i class="fa fa-circle" aria-hidden="true"></i><span>Connected</span></span>
                     </div>
@@ -106,11 +106,11 @@
                     Twitter
                   </div>
                   <div class="card-body text-center">
-                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="../assets/images/profile.png">
+                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="{{ Session::get('twitter')->avatar }}">
                     <div class="app-title">
                       {{-- <div class="title"><span class="highlight">Ayat Maulana</span></div> --}}
                       <br>
-                      <h4 class="media-heading">Ayat Maulana</h4>
+                      <h4 class="media-heading"><a href="{{ url('/history') }}">{{ Session::get('twitter')->nickname }}</a></h4>
                       <br>
                       <span class="badge badge-success badge-icon"><i class="fa fa-circle" aria-hidden="true"></i><span>Connected</span></span>
                     </div>
@@ -119,12 +119,12 @@
               </div>
               @else
               <div class="col-md-4">
-                <button type="button" class="btn btn-default btn-sm btn-social __twitter">
+                <a href="{{ url('auth_twitter') }}" class="btn btn-default btn-sm btn-social __twitter">
                   <div class="info">
                     <i class="icon fa fa-twitter" aria-hidden="true"></i>
                     <span class="title">Connect Twitter</span>
                   </div>
-                </button>
+                </a>
               </div>
             @endif
 

@@ -39,5 +39,11 @@ return [
         'client_id' => env('FACEBOOK_APP_ID'),
         'client_secret' => env('FACEBOOK_SECRET_KEY'),
         'redirect' => 'http://localhost:8000/auth_facebook'
+    ],
+
+    'twitter' => [
+        'client_id'     => env('TWITTER_CONSUMER_KEY'),
+        'client_secret' => env('TWITTER_SECRET_KEY'),
+        'redirect'      => 'http://localhost:8000/auth_twitter/callback'
     ]
 ];

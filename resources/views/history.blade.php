@@ -2,7 +2,11 @@
 <html>
   <head>
     <title>Sosial Media Integration</title>
-    
+    <style>
+      td{
+        word-wrap: break-word;
+      }
+    </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="./assets/css/vendor.css">
     <link rel="stylesheet" type="text/css" href="./assets/css/flat-admin.css">
@@ -36,145 +40,63 @@
                 <li class="navbar-title">Social Media Integration</li>
               </ul>
               <ul class="nav navbar-nav navbar-right">
+                @if (Session::has('instagram'))
                 <li class="dropdown notification">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <div class="icon"><i class="fa fa-instagram" aria-hidden="true"></i></div>
-                    <div class="title">New Orders</div>
-                    <div class="count">0</div>
+                    <div class="title"></div>
+                    <div class="count">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                    </div>
                   </a>
                   <div class="dropdown-menu">
                     <ul>
-                      <li class="dropdown-header">Ordering</li>
-                      <li class="dropdown-empty">No New Ordered</li>
+                      <li class="dropdown-header">Instagram</li>
                       <li class="dropdown-footer">
-                        <a href="#">View All <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                        <a href="{{ url('/logout/instagram') }}">Logout <i class="fa fa-angle-right" aria-hidden="true"></i></a>
                       </li>
                     </ul>
                   </div>
                 </li>
+                @endif
+                @if (Session::has('facebook'))
                 <li class="dropdown notification primary">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <div class="icon"><i class="fa fa-facebook" aria-hidden="true"></i></div>
-                    <div class="title">Unread Messages</div>
-                    <div class="count">99</div>
+                    <div class="title"></div>
+                    <div class="count">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                    </div>
                   </a>
                   <div class="dropdown-menu">
                     <ul>
-                      <li class="dropdown-header">Message</li>
-                      <li>
-                        <a href="#">
-                          <span class="badge badge-warning pull-right">10</span>
-                          <div class="message">
-                            <img class="profile" src="https://placehold.it/100x100">
-                            <div class="content">
-                              <div class="title">"Payment Confirmation.."</div>
-                              <div class="description">Alan Anderson</div>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span class="badge badge-warning pull-right">5</span>
-                          <div class="message">
-                            <img class="profile" src="https://placehold.it/100x100">
-                            <div class="content">
-                              <div class="title">"Hello World"</div>
-                              <div class="description">Marco  Harmon</div>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span class="badge badge-warning pull-right">2</span>
-                          <div class="message">
-                            <img class="profile" src="https://placehold.it/100x100">
-                            <div class="content">
-                              <div class="title">"Order Confirmation.."</div>
-                              <div class="description">Brenda Lawson</div>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
+                      <li class="dropdown-header">Facebook</li>
                       <li class="dropdown-footer">
-                        <a href="#">View All <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                        <a href="{{ url('/logout/facebook') }}">Logout <i class="fa fa-angle-right" aria-hidden="true"></i></a>
                       </li>
                     </ul>
                   </div>
                 </li>
+                @endif
+                @if (Session::has('twitter'))
                 <li class="dropdown notification info">
                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                     <div class="icon"><i class="fa fa-twitter" aria-hidden="true"></i></div>
-                    <div class="title">System Notifications</div>
-                    <div class="count">10</div>
+                    <div class="title"></div>
+                    <div class="count">
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                    </div>
                   </a>
                   <div class="dropdown-menu">
                     <ul>
-                      <li class="dropdown-header">Notification</li>
-                      <li>
-                        <a href="#">
-                          <span class="badge badge-danger pull-right">8</span>
-                          <div class="message">
-                            <div class="content">
-                              <div class="title">New Order</div>
-                              <div class="description">$400 total</div>
-                            </div>
-                          </div>
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span class="badge badge-danger pull-right">14</span>
-                          Inbox
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span class="badge badge-danger pull-right">5</span>
-                          Issues Report
-                        </a>
-                      </li>
+                      <li class="dropdown-header">Twitter</li>
                       <li class="dropdown-footer">
-                        <a href="#">View All <i class="fa fa-angle-right" aria-hidden="true"></i></a>
+                        <a href="{{ url('/logout/twitter') }}">Logout <i class="fa fa-angle-right" aria-hidden="true"></i></a>
                       </li>
                     </ul>
                   </div>
                 </li>
-                <li class="dropdown profile">
-                  <a href="/html/pages/profile.html" class="dropdown-toggle"  data-toggle="dropdown">
-                    <img class="profile-img" src="./assets/images/profile.png">
-                    <div class="title">Profile</div>
-                  </a>
-                  <div class="dropdown-menu">
-                    <div class="profile-info">
-                      <h4 class="username">Scott White</h4>
-                    </div>
-                    <ul class="action">
-                      <li>
-                        <a href="#">
-                          Profile
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          <span class="badge badge-danger pull-right">5</span>
-                          My Inbox
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          Setting
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#">
-                          Logout
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </li>
+                @endif
               </ul>
             </div>
           </div>
@@ -221,17 +143,30 @@
                     </tr>
                   </thead>
                   <tbody class="width:100%">
-                    @foreach ($data['sosmed'] as $element)
-                        <tr role="row" class="odd">
-                          <td class=""><small>{{ $element->konten }}</small></td>
-                          <td class="" style="width:10px !important"><small><img style="width:100px;height:100px" src="{{ $element->media }}"></small></td>
-                          <td class="sorting_1">{{ $element->waktu }}</td>
-                          <td>Instagram</td>
-                          <td>{{ $element->link }}</td>
-                        </tr>
+                    {{-- @for ($i = 0; $i < count($data['sosmed'])-1 ; $i++) --}}
+                      @foreach ($data['sosmed'] as $element)
+                          <tr role="row" class="odd">
+                            <td class=""><small>{{ $element->konten }}</small></td>
+                            <td class="" style="width:10px !important">
+                            @if ($element->media != '')
+                              <a target="_blank" href="{{ $element->media }}"><img style="width:100px;height:100px" src="{{ $element->media }}"></a>
+                            @else
+                              <img src="https://pbs.twimg.com/profile_images/600060188872155136/st4Sp6Aw_400x400.jpg" style="width:100px;height:100px">
+                            @endif
+                            </td>
+                            <td class="sorting_1">{{ date("D-M-Y h:i:s",$element->waktu) }}</td>
+                            <td>{{ $element->source }}</td>
+                            <td><a href="{{ $element->link }}" target="_blank">Link</a></td>
+                          </tr>
                       @endforeach
+                    {{-- @endfor --}}
                   </tbody>
                 </table>
+                <div class="row">
+                  <div class="col-md-12 text-center">
+                    {{-- {{ $data['sosmed']->render() }} --}}
+                  </div>
+                </div>
             </div>
           </div>
         </div>
