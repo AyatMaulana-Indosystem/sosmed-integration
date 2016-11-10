@@ -47,10 +47,11 @@ class Instagram_Controller extends Controller
 				foreach ($obj['data'] as $key => $value) {
 					SosmedModel::create([
 						'user_id' => $get_id[0]->id,
-						'konten'  => stripcslashes(json_encode($value['caption']['text'])),
+						// 'konten'  => stripcslashes(json_encode($value['caption']['text'])),
+						'konten'  => $value['caption']['text'],
 						'media'	  => $value['images']['standard_resolution']['url'],
 						'waktu'   => $value['created_time'],
-						'source'  => '',
+						'source'  => 'instagram',
 						'link'    => $value['link']
 					]);
 					// array_push($aray, );

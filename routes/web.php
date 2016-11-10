@@ -23,15 +23,25 @@ Route::get('/destroy', function(){
 Route::get('/auth_instagram', 'Instagram_Controller@auth');
 Route::get('/history','HistoryController@index');
 
-Route::get('/in','Instagram_Controller@index');
+// Route::get('/in','Instagram_Controller@index');
 
 // Facebook
-
 Route::get('/auth_facebook','Facebook_Controller@auth');
 Route::get('/auth_facebook/callback','Facebook_Controller@callback');
-Route::get('/facebook','Facebook_Controller@facebook');
+// Route::get('/facebook','Facebook_Controller@facebook');
 
 
+// Check session
 Route::get('/cek', function(){
 	return Session::all();
 });
+
+// Twitter
+Route::get('/auth_twitter','Twitter_Controller@auth');
+Route::get('/auth_twitter/callback','Twitter_Controller@callback');
+
+// Logout
+Route::get('/logout/{sosmed}','LogoutController@logout');
+
+// Cron
+Route::get('/cron','CronController@index');
