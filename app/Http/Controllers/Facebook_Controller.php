@@ -16,86 +16,70 @@ class Facebook_Controller extends Controller
 {
 	public function auth(){
 		if (isset($_GET['code'])) {
-			// return \Redirect::to('auth_facebook/callback');
 
-			$user = Socialite::driver('facebook')->user();
-			$user = $this->getLongToken($user->token);
-			// dd($user);
-			// die();
+			# Auth with Socialite
+			$user 						= Socialite::driver('facebook')->user();
 
-			$cek = AccessTokenModel::where('value','=',$user['token'])->get();
+			#Get Long Access Token
+			$user 						= $this->getLongToken($user->token);
 
+			#Get Access Token from db
+			$cek 						= AccessTokenModel::where('value','=',$user['token'])->get();
+
+			#If Access Token db = 0
 			if (count($cek) == 0) {
+
+				#Store Access Token
 				AccessTokenModel::create([
-					'value' => $user['token'],
-					'type' => 'facebook'
+					'value' 			=> $user['token'],
+					'type' 				=> 'facebook'
 				]);
 
-				$get_id = AccessTokenModel::where('value','=',$user['token'])->get();
+				#Get user_id from latest Access Token
+				$get_id 				= AccessTokenModel::where('value','=',$user['token'])->get();
 
-				// Get User Feed;
-				$feed = file_get_contents("https://graph.facebook.com/me/posts?access_token=".$user['token']."&fields=id,story,created_time,message,link,attachments{media}&limit=100");
-				$obj = json_decode($feed,true);
+				#Get User Feed;
+				$feed 					= file_get_contents("https://graph.facebook.com/me/posts?access_token=".$user['token']."&fields=id,story,created_time,message,link,attachments{media}&limit=100");
+				$obj 					= json_decode($feed,true);
 
-
-				$aray = [];
-				$a = 0;
+				#insert user feed to db
 				foreach ($obj['data'] as $key => $value) {
 					$row = [];
 
-					$row['user_id'] = $get_id[0]->id;
-					$row['waktu'] = strtotime($value['created_time']);
-					$row['source'] = 'facebook';
-					$row['link'] = '';
-					$row['konten'] = '';
-					$row['media'] = '';
-
-
-
-
-
-
-					// array_push($aray, [
-					// 	'user_id' => $get_id[0]->id,
-					// 	'konten'  => stripcslashes(json_encode($value->message)),
-					// 	'media'	  => $value->attachments['data'][0]->media->image->src,
-					// 	'waktu'   => $value->created_time,
-					// 	'source'  => 'facebook',
-					// 	'link'    => $value->link
-					// ]);
+					$row['user_id'] 	= $get_id[0]->id;
+					$row['waktu'] 		= strtotime($value['created_time']);
+					$row['source'] 		= 'facebook';
+					$row['link'] 		= '';
+					$row['konten'] 		= '';
+					$row['media'] 		= '';
 
 					if (isset($value['link'])) {
-						$row['link'] = $value['link'];
+						$row['link'] 	= $value['link'];
 					}
 
 					if (isset($value['message'])) {
 						// $row['konten'] = stripcslashes(json_encode($value['message']));
-						$row['konten'] = $value['message'];
+						$row['konten'] 	= $value['message'];
 					}
 
 					if (isset($value['attachments']['data'][0]['media']['image']['src'])) {
-						$row['media'] = $value['attachments']['data'][0]['media']['image']['src'];
+						$row['media'] 	= $value['attachments']['data'][0]['media']['image']['src'];
 					}
-					$a++;
+
+					#insert into db
 					SosmedModel::create($row);
-
-
-					// array_push($aray, $row);
 				}
-
-
-				// print_r($aray);
-				// die(); 
-
-				// print_r($obj);
 			}
 
-
+			#Put data into Session
 			Session::put('facebook',$user);
-			return Redirect::to('history');
 
+			#Redirect to history
+			return Redirect::to('history');
 		}
 		else{
+
+			#Do facebook auth
 			return Socialite::driver('facebook')->scopes([
 				'email',
 				'publish_actions',
@@ -110,56 +94,40 @@ class Facebook_Controller extends Controller
 				'pages_manage_instant_articles'
 			])->redirect();
 		}
-
-	}
-
-	public function callback(){
-		$user = Socialite::driver('facebook')->user();
-
-		return $user;
-	}
-
-	public function facebook(){
-		return 1;
 	}
 
 	public function getLongToken($access_token)
 	{
-		$step_1 = "https://graph.facebook.com/oauth/access_token?";
-		$step_1 .= "grant_type=fb_exchange_token&";
-		$step_1 .= "client_id=".env("FACEBOOK_APP_ID")."&";
-		$step_1 .= "client_secret=".env("FACEBOOK_SECRET_KEY")."&";
-		$step_1 .= "fb_exchange_token=".$access_token;
-		$step_1 = file_get_contents($step_1);
+		$step_1 					= "https://graph.facebook.com/oauth/access_token?";
+		$step_1 					.= "grant_type=fb_exchange_token&";
+		$step_1 					.= "client_id=".env("FACEBOOK_APP_ID")."&";
+		$step_1 					.= "client_secret=".env("FACEBOOK_SECRET_KEY")."&";
+		$step_1 					.= "fb_exchange_token=".$access_token;
+		$step_1 					= file_get_contents($step_1);
+		$step_1_rslt 				= substr($step_1, 13);
+
+		$step_2 					= "https://graph.facebook.com/oauth/client_code?";
+		$step_2 					.= "access_token=".$step_1_rslt."&";
+		$step_2 					.= "client_secret=".env("FACEBOOK_SECRET_KEY")."&";
+		$step_2 					.= "redirect_uri=".env("FACEBOOK_REDIRECT_URI")."&";
+		$step_2 					.= "client_id=".env("FACEBOOK_APP_ID");
+		$step_2 					= file_get_contents($step_2);
+		$step_2_rslt 				= json_decode($step_2, true); //code
 
 
-		$step_1_rslt = substr($step_1, 13);
+		$step_3 					= "https://graph.facebook.com/oauth/access_token?";
+		$step_3 					.= "code=".$step_2_rslt['code']."&";
+		$step_3 					.= "client_id=".env("FACEBOOK_APP_ID")."&";
+		$step_3 					.= "redirect_uri=".env("FACEBOOK_REDIRECT_URI");
+		$step_3 					= file_get_contents($step_3, true);
+		$step_3_rslt 				= json_decode($step_3, true);
 
-		$step_2 = "https://graph.facebook.com/oauth/client_code?";
-		$step_2 .= "access_token=".$step_1_rslt."&";
-		$step_2 .= "client_secret=".env("FACEBOOK_SECRET_KEY")."&";
-		$step_2 .= "redirect_uri=".env("FACEBOOK_REDIRECT_URI")."&";
-		$step_2 .= "client_id=".env("FACEBOOK_APP_ID");
-		$step_2 = file_get_contents($step_2);
-
-		$step_2_rslt = json_decode($step_2, true); //code
-
-
-		$step_3 = "https://graph.facebook.com/oauth/access_token?";
-		$step_3 .= "code=".$step_2_rslt['code']."&";
-		$step_3 .= "client_id=".env("FACEBOOK_APP_ID")."&";
-		$step_3 .= "redirect_uri=".env("FACEBOOK_REDIRECT_URI");
-		$step_3 = file_get_contents($step_3, true);
-
-		$step_3_rslt = json_decode($step_3, true);
-
-		// $data = new \stdClass;
-		$data['token'] = $step_3_rslt['access_token'];
+		$data['token'] 				= $step_3_rslt['access_token'];
 
 		// getting Picture and Name
-		$get_content = file_get_contents("https://graph.facebook.com/me?fields=id,name,picture&access_token=".$step_3_rslt['access_token']);
-		$data['profile'] = json_decode($get_content, true);
+		$get_content 				= file_get_contents("https://graph.facebook.com/me?fields=id,name,picture&access_token=".$step_3_rslt['access_token']);
+		$data['profile'] 			= json_decode($get_content, true);
+		
 		return $data;
-		die();
 	}
 }
