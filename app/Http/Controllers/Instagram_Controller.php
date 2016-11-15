@@ -12,6 +12,7 @@ use App\Http\Controllers\CurlController;
 
 use Redirect;
 use Session;
+use Socialite;
 
 class Instagram_Controller extends Controller
 {

@@ -16,19 +16,23 @@ class CronController extends Controller
 {
 	public function update()
 	{
-		$count				  = 0;
-		$data['access_token'] = AccessTokenModel::all();
+		$count				 					= 0;
+
+		#get all access_token from db
+		$data['access_token'] 					= AccessTokenModel::all();
 
 		foreach($data['access_token'] as $key => $value){
 			
 			#If Facebook Access Token
 			if ($value->type == 'facebook')
 			{
+				#get new feed
 				$new_feed						= Facebook_Controller::get_feed($value->value);
 
+				#get new feed from db
 				$get_post						= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
 
-				#If has new feed
+				#If new feed != new feed from db
 				if (strtotime($new_feed['data'][0]['created_time']) != $get_post[0]['waktu'])
 				{
 
@@ -38,7 +42,6 @@ class CronController extends Controller
 						if (strtotime($value2['created_time']) > $get_post[0]['waktu']) 
 						{
 							$row = [];
-
 							$row['user_id'] 	= $value->id;
 							$row['waktu'] 		= strtotime($value2['created_time']);
 							$row['source'] 		= 'facebook';
@@ -51,7 +54,6 @@ class CronController extends Controller
 							}
 
 							if (isset($value2['message'])) {
-								// $row['konten'] = stripcslashes(json_encode($value['message']));
 								$row['konten'] 	= $value2['message'];
 							}
 
@@ -61,7 +63,6 @@ class CronController extends Controller
 
 							#insert into db
 							SosmedModel::create($row);
-							unset($row);
 						}
 					}
 
@@ -69,44 +70,42 @@ class CronController extends Controller
 				}
 			}
 
+			#If Twitter Access Token
 			if ($value->type == 'twitter')
 			{
+				#explode token from db
 				$token 							= explode(',',$value->value);
 
-				#get_content from 
+				#get new feed
 				$new_feed 						= Twitter_Controller::get_feed($token[0],$token[1]);
-				// return strtotime($new_feed[0]->created_at);
 
+				#get new feed from db
 				$get_post 						= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
 
 
-				// echo strtotime($new_feed[0]->created_at).' , ';
-				// print_r($new_feed);
-
+				#If new feed != new feed from db
 				if (strtotime($new_feed[0]->created_at) != $get_post[0]['waktu']) 
 				{
-					// return 1;
 					foreach ($new_feed as $key => $value2) {
-						// dd($new_feed);
+
+						#do checking, if time > latest time in db
 						if (strtotime($value2->created_at) > $get_post[0]['waktu']) 
 						{
 							$row = [];
-							$row['user_id'] 		= $value->id;
-							$row['post_id'] 		= $value2->id;
-							$row['konten']  		= $value2->text;
-							$row['waktu']			= strtotime($value2->created_at);
-							$row['source']  		= 'twitter';
-							$row['link']			= 'http://twitter.com/'.$new_feed[0]->user->screen_name.'/status/'.$value->id;
-							$row['media']			= '';
+							$row['user_id'] 	= $value->id;
+							$row['post_id'] 	= $value2->id;
+							$row['konten']  	= $value2->text;
+							$row['waktu']		= strtotime($value2->created_at);
+							$row['source']  	= 'twitter';
+							$row['link']		= 'http://twitter.com/'.$new_feed[0]->user->screen_name.'/status/'.$value->id;
+							$row['media']		= '';
 
 							if (isset($value2->entities->media)) {
-								$row['media']		=  $value2->entities->media[0]->media_url;
+								$row['media']	=  $value2->entities->media[0]->media_url;
 							}
 
 							#insert feed to db
 							SosmedModel::create($row);
-							// return $row;
-							// echo 1;
 						}
 					}
 
@@ -119,16 +118,22 @@ class CronController extends Controller
 			// if Instagram Access Token
 			if ($value->type == 'instagram')
 			{
-				#get_content from 
+				#get new feed
 				$new_feed 						= Instagram_Controller::get_feed($value->value);
 
+				#get new feed from db
 				$get_post 						= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
 
+				#If new feed != new feed from db
 				if ($new_feed['data'][0]['created_time'] != $get_post[0]['waktu']) 
 				{
-					foreach ($new_feed['data'] as $key => $value2) {
+					foreach ($new_feed['data'] as $key => $value2) 
+					{
+
+						#do checking, if time > latest time in db
 						if ($value2['created_time'] > $get_post[0]['waktu']) 
 						{
+							#insert into db
 							SosmedModel::create([
 								'user_id' 		=> $value->id,
 								'konten'  		=> $value2['caption']['text'],
@@ -141,14 +146,11 @@ class CronController extends Controller
 					}
 
 					$count++;
-					// $result 					= 'Cron Successfuly running for Instagram';
 				}
 			}
 		}
 
 		return $count.' User Updated';
-		// return $new_feed['data'][0]['created_time'];
-		// return $get_post;
 
 	}
 
