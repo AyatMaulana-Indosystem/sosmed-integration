@@ -24,8 +24,10 @@ class Twitter_Controller extends Controller
 		#get twitter_data from socialite
 		$twitter_user 						= Socialite::driver('twitter')->user();
 
+		$token_db 							= $twitter_user->token.','.$twitter_user->tokenSecret;
+
 		#cek access_token from db
-		$cek 								= AccessTokenModel::where('value','=',$twitter_user->token)->get();
+		$cek 								= AccessTokenModel::where('value','=',$token_db)->get();
 
 		#if access_token from db = 0
 		if (count($cek) == 0) {
@@ -39,16 +41,8 @@ class Twitter_Controller extends Controller
 			#get user_id from db
 			$get_id 						= AccessTokenModel::where('value','=',$twitter_user->token.','.$twitter_user->tokenSecret)->get();
 
-			#set params to get twiter_feed
-			$twitterOAuth 					= new TwitterOAuth(
-				env('TWITTER_CONSUMER_KEY'),
-				env('TWITTER_SECRET_KEY'),
-				$twitter_user->token,
-				$twitter_user->tokenSecret
-			);
-
 			#get twitter feed
-			$feed 							= $twitterOAuth->get("statuses/user_timeline", ["count" => 100]);
+			$feed 							= $this->get_feed($twitter_user->token,$twitter_user->tokenSecret);
 
 			foreach ($feed as $key => $value) {
 					$row = [];
@@ -67,14 +61,29 @@ class Twitter_Controller extends Controller
 					#insert feed to db
 					SosmedModel::create($row);
 			}
-
-			#put data into session
-			Session::put('twitter', $twitter_user);
-
-			#redirect to history
-			return \Redirect::to('/history');
 		}
 
-		
+		#put data into session
+		Session::put('twitter', $twitter_user);
+
+		#redirect to history
+		return \Redirect::to('/history');
+
+	}
+
+	public static function get_feed($token,$tokenSecret)
+	{
+			#set params to get twiter_feed
+			$twitterOAuth 					= new TwitterOAuth(
+				env('TWITTER_CONSUMER_KEY'),
+				env('TWITTER_SECRET_KEY'),
+				$token,
+				$tokenSecret
+			);
+
+			#get twitter feed
+			$feed 							= $twitterOAuth->get("statuses/user_timeline", ["count" => 100]);
+
+			return $feed;
 	}
 }

@@ -40,8 +40,7 @@ class Instagram_Controller extends Controller
 			$cek 						= AccessTokenModel::where('value','=',$curl['access_token'])->get();
 
 			#get user feed
-		    $url 						= 'https://api.instagram.com/v1/users/self/media/recent?access_token='.$curl['access_token'];
-		    $obj 						= json_decode(file_get_contents($url), true);
+		    $obj 						= $this->get_feed($curl['access_token']);
 
 		    #if access_token in db = 0
 			if (count($cek) == 0) 
@@ -60,6 +59,7 @@ class Instagram_Controller extends Controller
 					#insert feed into db
 					SosmedModel::create([
 						'user_id' 		=> $get_id[0]->id,
+						'post_id'		=> $value['id'],
 						'konten'  		=> $value['caption']['text'],
 						'media'	  		=> $value['images']['standard_resolution']['url'],
 						'waktu'   		=> $value['created_time'],
@@ -79,5 +79,13 @@ class Instagram_Controller extends Controller
 			#Redirect to root
 			return Redirect::to('/');
 	    }
+	}
+
+	public static function get_feed($token)
+	{
+		    $url 						= 'https://api.instagram.com/v1/users/self/media/recent?access_token='.$token;
+		    $obj 						= json_decode(file_get_contents($url), true);	
+
+		    return $obj;
 	}
 }

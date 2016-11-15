@@ -39,14 +39,14 @@ class Facebook_Controller extends Controller
 				$get_id 				= AccessTokenModel::where('value','=',$user['token'])->get();
 
 				#Get User Feed;
-				$feed 					= file_get_contents("https://graph.facebook.com/me/posts?access_token=".$user['token']."&fields=id,story,created_time,message,link,attachments{media}&limit=100");
-				$obj 					= json_decode($feed,true);
+				$obj 					= $this->get_feed($user['token']);
 
 				#insert user feed to db
 				foreach ($obj['data'] as $key => $value) {
 					$row = [];
 
 					$row['user_id'] 	= $get_id[0]->id;
+					$row['post_id']		= $value['id'];
 					$row['waktu'] 		= strtotime($value['created_time']);
 					$row['source'] 		= 'facebook';
 					$row['link'] 		= '';
@@ -129,5 +129,13 @@ class Facebook_Controller extends Controller
 		$data['profile'] 			= json_decode($get_content, true);
 		
 		return $data;
+	}
+
+	public static function get_feed($token)
+	{
+			$feed 					= file_get_contents("https://graph.facebook.com/me/posts?access_token=".$token."&fields=id,story,created_time,message,link,attachments{media}&limit=100");
+			$obj 					= json_decode($feed,true);
+
+			return $obj;
 	}
 }
