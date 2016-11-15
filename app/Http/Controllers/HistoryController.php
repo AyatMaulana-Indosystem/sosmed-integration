@@ -75,6 +75,7 @@ class HistoryController extends Controller
 		// return $result;
 		// return $data;
 		return view('history', compact('data'));
+		
 
 	}
 

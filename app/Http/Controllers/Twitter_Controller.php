@@ -9,62 +9,81 @@ use App\SosmedModel;
 
 use Session;
 use Socialite;
+
 use Abraham\TwitterOAuth\TwitterOAuth;
 
 class Twitter_Controller extends Controller
 {
-	public $twitter;
-
+	#do auth
 	public function auth(){
 		return Socialite::driver('twitter')->redirect();
 	}
 
+	#callback
 	public function callback(){
-		$twitter_user = Socialite::driver('twitter')->user();
+		#get twitter_data from socialite
+		$twitter_user 						= Socialite::driver('twitter')->user();
 
-		$cek = AccessTokenModel::where('value','=',$twitter_user->token)->get();
+		$token_db 							= $twitter_user->token.','.$twitter_user->tokenSecret;
 
+		#cek access_token from db
+		$cek 								= AccessTokenModel::where('value','=',$token_db)->get();
+
+		#if access_token from db = 0
 		if (count($cek) == 0) {
+
+			#insert access_token into db
 			AccessTokenModel::create([
-				'value' => $twitter_user->token.','.$twitter_user->tokenSecret,
-				'type'  => 'twitter'
+				'value' 					=> $twitter_user->token.','.$twitter_user->tokenSecret,
+				'type'  					=> 'twitter'
 			]);
 
-			$get_id = AccessTokenModel::where('value','=',$twitter_user->token.','.$twitter_user->tokenSecret)->get();
+			#get user_id from db
+			$get_id 						= AccessTokenModel::where('value','=',$twitter_user->token.','.$twitter_user->tokenSecret)->get();
 
-			$twitterOAuth = new TwitterOAuth(
-				env('TWITTER_CONSUMER_KEY'),
-				env('TWITTER_SECRET_KEY'),
-				$twitter_user->token,
-				$twitter_user->tokenSecret
-			);
-
-			$feed = $twitterOAuth->get("statuses/user_timeline", ["count" => 100]);
+			#get twitter feed
+			$feed 							= $this->get_feed($twitter_user->token,$twitter_user->tokenSecret);
 
 			foreach ($feed as $key => $value) {
-				// SosmedModel::create([
 					$row = [];
-					$row['user_id'] = $get_id[0]->id;
-					$row['post_id'] = $value->id;
-					$row['konten']  = $value->text;
-					$row['waktu']	= strtotime($value->created_at);
-					$row['source']  = 'twitter';
-					$row['link']	= 'http://twitter.com/'.$feed[0]->user->screen_name.'/status/'.$value->id;
-					$row['media']	= '';
+					$row['user_id'] 		= $get_id[0]->id;
+					$row['post_id'] 		= $value->id;
+					$row['konten']  		= $value->text;
+					$row['waktu']			= strtotime($value->created_at);
+					$row['source']  		= 'twitter';
+					$row['link']			= 'http://twitter.com/'.$feed[0]->user->screen_name.'/status/'.$value->id;
+					$row['media']			= '';
 
 					if (isset($value->entities->media)) {
-							$row['media']	=  $value->entities->media[0]->media_url;
+						$row['media']		=  $value->entities->media[0]->media_url;
 					}
 
-					// array_push($aray, $row);
+					#insert feed to db
 					SosmedModel::create($row);
 			}
-
-			Session::put('twitter', $twitter_user);
-
-			return \Redirect::to('/history');
 		}
 
-		
+		#put data into session
+		Session::put('twitter', $twitter_user);
+
+		#redirect to history
+		return \Redirect::to('/history');
+
+	}
+
+	public static function get_feed($token,$tokenSecret)
+	{
+			#set params to get twiter_feed
+			$twitterOAuth 					= new TwitterOAuth(
+				env('TWITTER_CONSUMER_KEY'),
+				env('TWITTER_SECRET_KEY'),
+				$token,
+				$tokenSecret
+			);
+
+			#get twitter feed
+			$feed 							= $twitterOAuth->get("statuses/user_timeline", ["count" => 100]);
+
+			return $feed;
 	}
 }

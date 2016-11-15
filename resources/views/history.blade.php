@@ -154,7 +154,7 @@
                               <img src="https://pbs.twimg.com/profile_images/600060188872155136/st4Sp6Aw_400x400.jpg" style="width:100px;height:100px">
                             @endif
                             </td>
-                            <td class="sorting_1">{{ date("D-M-Y h:i:s",$element->waktu) }}</td>
+                            <td class="sorting_1">{{ date("D d-M-Y h:i:s",$element->waktu) }}</td>
                             <td>{{ $element->source }}</td>
                             <td><a href="{{ $element->link }}" target="_blank">Link</a></td>
                           </tr>

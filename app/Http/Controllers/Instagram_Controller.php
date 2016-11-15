@@ -17,7 +17,10 @@ class Instagram_Controller extends Controller
 {
 	public function auth(){
 
-		$url = "https://api.instagram.com/oauth/access_token";
+		#instagram auth endpoint
+		$url 							= "https://api.instagram.com/oauth/access_token";
+	    
+		#params
 	    $access_token_parameters = array(
 	        'client_id'                =>     env('INSTAGRAM_CLIENT_ID'),
 	        'client_secret'            =>     env('INSTAGRAM_CLIENT_SECRET'),
@@ -26,50 +29,63 @@ class Instagram_Controller extends Controller
 	        'code'                     =>     $_GET['code']
 	    );
 
-		$curl = CurlController::get($url, $access_token_parameters, TRUE);
+	    #do auth
+		$curl 							= CurlController::get($url, $access_token_parameters, TRUE);
 
-	    if (isset($curl['access_token'])) {
-			$cek = AccessTokenModel::where('value','=',$curl['access_token'])->get();
+		#if auth success and have access token
+	    if (isset($curl['access_token'])) 
+	                                                                                                      {
 
-		    $url = 'https://api.instagram.com/v1/users/self/media/recent?access_token='.$curl['access_token'];
-		    $hasil = file_get_contents($url);
-		    $obj = json_decode($hasil, true);
+	    	#get access token in db
+			$cek 						= AccessTokenModel::where('value','=',$curl['access_token'])->get();
 
-			if (count($cek) == 0) {
+			#get user feed
+		    $obj 						= $this->get_feed($curl['access_token']);
 
+		    #if access_token in db = 0
+			if (count($cek) == 0) 
+			{
+				#insert access_token into db
 				AccessTokenModel::create([
-					'type' => 'instagram',
-					'value' => $curl['access_token']
+					'type' 				=> 'instagram',
+					'value' 			=> $curl['access_token']
 				]);
 
-				$get_id = AccessTokenModel::where('value','=',$curl['access_token'])->get();
-				$aray = [];
+				#get user_id
+				$get_id 				= AccessTokenModel::where('value','=',$curl['access_token'])->get();
+
 				foreach ($obj['data'] as $key => $value) {
+
+					#insert feed into db
 					SosmedModel::create([
-						'user_id' => $get_id[0]->id,
-						// 'konten'  => stripcslashes(json_encode($value['caption']['text'])),
-						'konten'  => $value['caption']['text'],
-						'media'	  => $value['images']['standard_resolution']['url'],
-						'waktu'   => $value['created_time'],
-						'source'  => 'instagram',
-						'link'    => $value['link']
+						'user_id' 		=> $get_id[0]->id,
+						'post_id'		=> $value['id'],
+						'konten'  		=> $value['caption']['text'],
+						'media'	  		=> $value['images']['standard_resolution']['url'],
+						'waktu'   		=> $value['created_time'],
+						'source'  		=> 'instagram',
+						'link'    		=> $value['link']
 					]);
-					// array_push($aray, );
 				}
 			}
 
+			#put data into session
 			Session::put('instagram',$curl);
 
+			#Redirect to history
 			return Redirect::to('/history');
 	    }
 	    else{
-	    	echo 'fail';
+			#Redirect to root
+			return Redirect::to('/');
 	    }
 	}
 
-	public function index(){
-		foreach (SosmedModel::all() as $key => $value) {
-			echo json_encode(stripcslashes($value->konten)),'<br><br><br>';
-		}
+	public static function get_feed($token)
+	{
+		    $url 						= 'https://api.instagram.com/v1/users/self/media/recent?access_token='.$token;
+		    $obj 						= json_decode(file_get_contents($url), true);	
+
+		    return $obj;
 	}
 }
