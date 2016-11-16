@@ -12,12 +12,15 @@ use App\Http\Controllers\CurlController;
 
 use Redirect;
 use Session;
+use Socialite;
 
 class Instagram_Controller extends Controller
 {
 	public function auth(){
 
 		#instagram auth endpoint
+		// TODO: pindah ke .env
+		// TODO: sampai .com dan taruh di constant
 		$url 							= "https://api.instagram.com/oauth/access_token";
 	    
 		#params
@@ -25,7 +28,7 @@ class Instagram_Controller extends Controller
 	        'client_id'                =>     env('INSTAGRAM_CLIENT_ID'),
 	        'client_secret'            =>     env('INSTAGRAM_CLIENT_SECRET'),
 	        'grant_type'               =>     'authorization_code',
-	        'redirect_uri'             =>     'http://localhost:8000/auth_instagram',
+	        'redirect_uri'             =>     env('INSTAGRAM_REDIRECT_URI'), 
 	        'code'                     =>     $_GET['code']
 	    );
 
@@ -56,16 +59,21 @@ class Instagram_Controller extends Controller
 
 				foreach ($obj['data'] as $key => $value) {
 
+					$row['user_id'] 		= $get_id[0]->id;
+					$row['konten']  		= '';
+					$row['media']	  		= $value['images']['standard_resolution']['url'];
+					$row['waktu']   		= $value['created_time'];
+					$row['source']  		= 'instagram';
+					$row['link']    		= $value['link'];
+					$row['json']			= json_encode($value);
+
+					if (isset($value['caption']['text'])) 
+					{
+						$row['konten']  	= $value['caption']['text'];
+					}
+
 					#insert feed into db
-					SosmedModel::create([
-						'user_id' 		=> $get_id[0]->id,
-						'post_id'		=> $value['id'],
-						'konten'  		=> $value['caption']['text'],
-						'media'	  		=> $value['images']['standard_resolution']['url'],
-						'waktu'   		=> $value['created_time'],
-						'source'  		=> 'instagram',
-						'link'    		=> $value['link']
-					]);
+					SosmedModel::create($row);
 				}
 			}
 

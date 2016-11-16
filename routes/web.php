@@ -4,10 +4,6 @@ Route::get('/', function () {
     return view('login');
 });
 
-Route::get('/destroy', function(){
-	\Session::flush();
-	echo 'All Session Destroyed';
-});
 
 // history
 Route::get('/history','HistoryController@index');
@@ -26,8 +22,6 @@ Route::get('/auth_twitter/callback','Twitter_Controller@callback');
 // Logout
 Route::get('/logout/{sosmed}','LogoutController@logout');
 
-// Route::get('/in','Instagram_Controller@index');
-// Route::get('/facebook','Facebook_Controller@facebook');
 
 
 // Check session
@@ -35,9 +29,11 @@ Route::get('/cek', function(){
 	return Session::all();
 });
 
+Route::get('/destroy', function(){
+	\Session::flush();
+	echo 'All Session Destroyed';
+});
 
 // Cron
-Route::get('/cron','CronController@update');
-
-
-// Oflline auth
+Route::get('/cron-update','CronController@update');
+Route::get('/cron-delete','CronController@delete');

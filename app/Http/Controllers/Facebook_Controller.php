@@ -17,7 +17,7 @@ class Facebook_Controller extends Controller
 	public function auth(){
 		if (isset($_GET['code'])) {
 
-			# Auth with Socialite
+			# get user info
 			$user 						= Socialite::driver('facebook')->user();
 
 			#Get Long Access Token
@@ -52,6 +52,7 @@ class Facebook_Controller extends Controller
 					$row['link'] 		= '';
 					$row['konten'] 		= '';
 					$row['media'] 		= '';
+					$row['json']		= json_decode($value);
 
 					if (isset($value['link'])) {
 						$row['link'] 	= $value['link'];
