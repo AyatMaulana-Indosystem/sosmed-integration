@@ -14,7 +14,6 @@ Route::get('/history','HistoryController@index');
 
 // Instagram
 Route::get('/auth_instagram', 'Instagram_Controller@auth');
-// Route::get('/auth_in',		  'Instagram_Controller@index');
 
 // Facebook
 Route::get('/auth_facebook','Facebook_Controller@auth');
@@ -38,7 +37,8 @@ Route::get('/cek', function(){
 
 
 // Cron
-Route::get('/cron','CronController@update');
+Route::get('/cron-update','CronController@update');
+Route::get('/cron-delete','CronController@delete');
 
 
 // Oflline auth

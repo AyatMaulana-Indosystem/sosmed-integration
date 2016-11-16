@@ -21,9 +21,11 @@ class Twitter_Controller extends Controller
 
 	#callback
 	public function callback(){
+
 		#get twitter_data from socialite
 		$twitter_user 						= Socialite::driver('twitter')->user();
 
+		#merge token & tokenSecret
 		$token_db 							= $twitter_user->token.','.$twitter_user->tokenSecret;
 
 		#cek access_token from db

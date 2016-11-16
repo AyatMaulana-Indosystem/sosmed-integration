@@ -57,16 +57,20 @@ class Instagram_Controller extends Controller
 
 				foreach ($obj['data'] as $key => $value) {
 
+					$row['user_id'] 		= $get_id[0]->id;
+					$row['konten']  		= '';
+					$row['media']	  		= $value['images']['standard_resolution']['url'];
+					$row['waktu']   		= $value['created_time'];
+					$row['source']  		= 'instagram';
+					$row['link']    		= $value['link'];
+
+					if (isset($value['caption']['text'])) 
+					{
+						$row['konten']  	= $value['caption']['text'];
+					}
+
 					#insert feed into db
-					SosmedModel::create([
-						'user_id' 		=> $get_id[0]->id,
-						'post_id'		=> $value['id'],
-						'konten'  		=> $value['caption']['text'],
-						'media'	  		=> $value['images']['standard_resolution']['url'],
-						'waktu'   		=> $value['created_time'],
-						'source'  		=> 'instagram',
-						'link'    		=> $value['link']
-					]);
+					SosmedModel::create($row);
 				}
 			}
 
