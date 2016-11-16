@@ -19,6 +19,8 @@ class Instagram_Controller extends Controller
 	public function auth(){
 
 		#instagram auth endpoint
+		// TODO: pindah ke .env
+		// TODO: sampai .com dan taruh di constant
 		$url 							= "https://api.instagram.com/oauth/access_token";
 	    
 		#params
@@ -26,7 +28,7 @@ class Instagram_Controller extends Controller
 	        'client_id'                =>     env('INSTAGRAM_CLIENT_ID'),
 	        'client_secret'            =>     env('INSTAGRAM_CLIENT_SECRET'),
 	        'grant_type'               =>     'authorization_code',
-	        'redirect_uri'             =>     'http://localhost:8000/auth_instagram',
+	        'redirect_uri'             =>     env('INSTAGRAM_REDIRECT_URI'), //TODO: pindah ke .env
 	        'code'                     =>     $_GET['code']
 	    );
 
