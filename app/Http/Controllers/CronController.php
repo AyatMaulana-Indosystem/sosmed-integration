@@ -30,10 +30,10 @@ class CronController extends Controller
 				$new_feed									= Facebook_Controller::get_feed($value->value);
 
 				#get new feed from db
-				$get_post									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','DESC')->get();
+				$get_post									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','DESC')->first();
 
 				#if new feed from db = 0 row
-				if (count($get_post) == 0) 
+				if (count($get_post) == 0 || count($get_post) == null) 
 				{
 					foreach ($new_feed['data'] as $key => $value2) 
 					{
@@ -72,13 +72,13 @@ class CronController extends Controller
 				{
 
 					#If new feed != new feed from db
-					if (strtotime($new_feed['data'][0]['created_time']) != $get_post[0]['waktu'])
+					if (strtotime($new_feed['data'][0]['created_time']) != $get_post->waktu)
 					{
 
 						foreach ($new_feed['data'] as $key => $value2) {
 
 							#do checking, if time > latest time in db
-							if (strtotime($value2['created_time']) > $get_post[0]['waktu']) 
+							if (strtotime($value2['created_time']) > $get_post->waktu) 
 							{
 								$row = [];
 								$row['user_id'] 			= $value->id;
@@ -123,10 +123,10 @@ class CronController extends Controller
 				$new_feed 									= Twitter_Controller::get_feed($token[0],$token[1]);
 
 				#get new feed from db
-				$get_post 									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
+				$get_post 									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->first();
 
 				#if new feed from db = 0 row
-				if (count($get_post) == 0) 
+				if (count($get_post) == 0 || count($get_post) == null) 
 				{
 					foreach ($new_feed as $key => $value2) {
 
@@ -159,12 +159,12 @@ class CronController extends Controller
 				{
 
 					#If new feed != new feed from db
-					if (strtotime($new_feed[0]->created_at) != $get_post[0]['waktu']) 
+					if (strtotime($new_feed[0]->created_at) != $get_post->waktu) 
 					{
 						foreach ($new_feed as $key => $value2) {
 
 							#do checking, if time > latest time in db
-							if (strtotime($value2->created_at) > $get_post[0]['waktu']) 
+							if (strtotime($value2->created_at) > $get_post->waktu) 
 							{
 								$row = [];
 								$row['user_id'] 			= $value->id;
@@ -201,7 +201,7 @@ class CronController extends Controller
 				$new_feed 									= Instagram_Controller::get_feed($value->value);
 
 				#get new feed from db
-				$get_post 									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
+				$get_post 									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->first();
 
 				#if new feed from db = 0 row
 				if (count($get_post) == 0) 
@@ -235,13 +235,13 @@ class CronController extends Controller
 				{
 
 					#If new feed != new feed from db
-					if ($new_feed['data'][0]['created_time'] != $get_post[0]['waktu']) 
+					if ($new_feed['data'][0]['created_time'] != $get_post->waktu) 
 					{
 						foreach ($new_feed['data'] as $key => $value2) 
 						{
 
 							#do checking, if time > latest time in db
-							if ($value2['created_time'] > $get_post[0]['waktu']) 
+							if ($value2['created_time'] > $get_post->waktu) 
 							{
 								$row['user_id'] 			= $value->id;
 								$row['konten']  			= '';
