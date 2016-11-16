@@ -49,17 +49,17 @@ class Instagram_Controller extends Controller
 			if (count($cek) == 0) 
 			{
 				#insert access_token into db
-				AccessTokenModel::create([
+				$insert 				= AccessTokenModel::create([
 					'type' 				=> 'instagram',
 					'value' 			=> $curl['access_token']
 				]);
 
 				#get user_id
-				$get_id 				= AccessTokenModel::where('value','=',$curl['access_token'])->get();
+				$user_id 				= $insert->id;
 
 				foreach ($obj['data'] as $key => $value) {
 
-					$row['user_id'] 		= $get_id[0]->id;
+					$row['user_id'] 		= $user_id;
 					$row['konten']  		= '';
 					$row['media']	  		= $value['images']['standard_resolution']['url'];
 					$row['waktu']   		= $value['created_time'];

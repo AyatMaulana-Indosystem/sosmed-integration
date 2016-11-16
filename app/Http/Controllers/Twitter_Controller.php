@@ -35,20 +35,20 @@ class Twitter_Controller extends Controller
 		if (count($cek) == 0) {
 
 			#insert access_token into db
-			AccessTokenModel::create([
+			$insert 						= AccessTokenModel::create([
 				'value' 					=> $twitter_user->token.','.$twitter_user->tokenSecret,
 				'type'  					=> 'twitter'
 			]);
 
 			#get user_id from db
-			$get_id 						= AccessTokenModel::where('value','=',$twitter_user->token.','.$twitter_user->tokenSecret)->get();
+			$user_id 						= $insert->id;
 
 			#get twitter feed
 			$feed 							= $this->get_feed($twitter_user->token,$twitter_user->tokenSecret);
 
 			foreach ($feed as $key => $value) {
 					$row = [];
-					$row['user_id'] 		= $get_id[0]->id;
+					$row['user_id'] 		= $user_id;
 					$row['post_id'] 		= $value->id;
 					$row['konten']  		= $value->text;
 					$row['waktu']			= strtotime($value->created_at);
