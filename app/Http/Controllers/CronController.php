@@ -16,10 +16,10 @@ class CronController extends Controller
 {
 	public function update()
 	{
-		$count				 					= 0;
+		$count				 								= 0;
 
 		#get all access_token from db
-		$data['access_token'] 					= AccessTokenModel::all();
+		$data['access_token'] 								= AccessTokenModel::all();
 
 		foreach($data['access_token'] as $key => $value){
 			
@@ -27,34 +27,36 @@ class CronController extends Controller
 			if ($value->type == 'facebook')
 			{
 				#get new feed
-				$new_feed						= Facebook_Controller::get_feed($value->value);
+				$new_feed									= Facebook_Controller::get_feed($value->value);
 
 				#get new feed from db
-				$get_post						= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','DESC')->get();
+				$get_post									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','DESC')->get();
 
+				#if new feed from db = 0 row
 				if (count($get_post) == 0) 
 				{
 					foreach ($new_feed['data'] as $key => $value2) 
 					{
+						#if new feed time > tomorrow
 						if (strtotime($value2['created_time']) > strtotime(date('Y-m-d h:i:s'). "-1 days") ) {
 								$row = [];
-								$row['user_id'] 	= $value->id;
-								$row['waktu'] 		= strtotime($value2['created_time']);
-								$row['source'] 		= 'facebook';
-								$row['link'] 		= '';
-								$row['konten'] 		= '';
-								$row['media'] 		= '';
+								$row['user_id'] 			= $value->id;
+								$row['waktu'] 				= strtotime($value2['created_time']);
+								$row['source'] 				= 'facebook';
+								$row['link'] 				= '';
+								$row['konten'] 				= '';
+								$row['media'] 				= '';
 
 								if (isset($value2['link'])) {
-									$row['link'] 	= $value2['link'];
+									$row['link'] 			= $value2['link'];
 								}
 
 								if (isset($value2['message'])) {
-									$row['konten'] 	= $value2['message'];
+									$row['konten'] 			= $value2['message'];
 								}
 
 								if (isset($value2['attachments']['data'][0]['media']['image']['src'])) {
-									$row['media'] 	= $value2['attachments']['data'][0]['media']['image']['src'];
+									$row['media'] 			= $value2['attachments']['data'][0]['media']['image']['src'];
 								}
 
 								#insert into db
@@ -78,23 +80,23 @@ class CronController extends Controller
 							if (strtotime($value2['created_time']) > $get_post[0]['waktu']) 
 							{
 								$row = [];
-								$row['user_id'] 	= $value->id;
-								$row['waktu'] 		= strtotime($value2['created_time']);
-								$row['source'] 		= 'facebook';
-								$row['link'] 		= '';
-								$row['konten'] 		= '';
-								$row['media'] 		= '';
+								$row['user_id'] 			= $value->id;
+								$row['waktu'] 				= strtotime($value2['created_time']);
+								$row['source'] 				= 'facebook';
+								$row['link'] 				= '';
+								$row['konten'] 				= '';
+								$row['media'] 				= '';
 
 								if (isset($value2['link'])) {
-									$row['link'] 	= $value2['link'];
+									$row['link'] 			= $value2['link'];
 								}
 
 								if (isset($value2['message'])) {
-									$row['konten'] 	= $value2['message'];
+									$row['konten'] 			= $value2['message'];
 								}
 
 								if (isset($value2['attachments']['data'][0]['media']['image']['src'])) {
-									$row['media'] 	= $value2['attachments']['data'][0]['media']['image']['src'];
+									$row['media'] 			= $value2['attachments']['data'][0]['media']['image']['src'];
 								}
 
 								#insert into db
@@ -112,31 +114,33 @@ class CronController extends Controller
 			if ($value->type == 'twitter')
 			{
 				#explode token from db
-				$token 							= explode(',',$value->value);
+				$token 										= explode(',',$value->value);
 
 				#get new feed
-				$new_feed 						= Twitter_Controller::get_feed($token[0],$token[1]);
+				$new_feed 									= Twitter_Controller::get_feed($token[0],$token[1]);
 
 				#get new feed from db
-				$get_post 						= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
+				$get_post 									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
 
+				#if new feed from db = 0 row
 				if (count($get_post) == 0) 
 				{
 					foreach ($new_feed as $key => $value2) {
 
+						#if new feed time > tomorrow
 						if (strtotime($value2->created_at) > strtotime(date('Y-m-d h:i:s'). "-1 days")) 
 						{
 								$row = [];
-								$row['user_id'] 	= $value->id;
-								$row['post_id'] 	= $value2->id;
-								$row['konten']  	= $value2->text;
-								$row['waktu']		= strtotime($value2->created_at);
-								$row['source']  	= 'twitter';
-								$row['link']		= 'http://twitter.com/'.$new_feed[0]->user->screen_name.'/status/'.$value2->id;
-								$row['media']		= '';
+								$row['user_id'] 			= $value->id;
+								$row['post_id'] 			= $value2->id;
+								$row['konten']  			= $value2->text;
+								$row['waktu']				= strtotime($value2->created_at);
+								$row['source']  			= 'twitter';
+								$row['link']				= 'http://twitter.com/'.$new_feed[0]->user->screen_name.'/status/'.$value2->id;
+								$row['media']				= '';
 
 								if (isset($value2->entities->media)) {
-									$row['media']	=  $value2->entities->media[0]->media_url;
+									$row['media']			=  $value2->entities->media[0]->media_url;
 								}
 
 								#insert feed to db
@@ -158,16 +162,16 @@ class CronController extends Controller
 							if (strtotime($value2->created_at) > $get_post[0]['waktu']) 
 							{
 								$row = [];
-								$row['user_id'] 	= $value->id;
-								$row['post_id'] 	= $value2->id;
-								$row['konten']  	= $value2->text;
-								$row['waktu']		= strtotime($value2->created_at);
-								$row['source']  	= 'twitter';
-								$row['link']		= 'http://twitter.com/'.$new_feed[0]->user->screen_name.'/status/'.$value2->id;
-								$row['media']		= '';
+								$row['user_id'] 			= $value->id;
+								$row['post_id'] 			= $value2->id;
+								$row['konten']  			= $value2->text;
+								$row['waktu']				= strtotime($value2->created_at);
+								$row['source']  			= 'twitter';
+								$row['link']				= 'http://twitter.com/'.$new_feed[0]->user->screen_name.'/status/'.$value2->id;
+								$row['media']				= '';
 
 								if (isset($value2->entities->media)) {
-									$row['media']	=  $value2->entities->media[0]->media_url;
+									$row['media']			=  $value2->entities->media[0]->media_url;
 								}
 
 								#insert feed to db
@@ -187,27 +191,29 @@ class CronController extends Controller
 			if ($value->type == 'instagram')
 			{
 				#get new feed
-				$new_feed 						= Instagram_Controller::get_feed($value->value);
+				$new_feed 									= Instagram_Controller::get_feed($value->value);
 
 				#get new feed from db
-				$get_post 						= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
+				$get_post 									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
 
+				#if new feed from db = 0 row
 				if (count($get_post) == 0) 
 				{
 					foreach ($new_feed['data'] as $key => $value2) 
 					{
+						#if new feed time > tomorrow
 						if ($value2['created_time'] > strtotime(date('Y-m-d h:i:s'). "-1 days")) 
 						{
-							$row['user_id'] 		= $value->id;
-							$row['konten']  		= '';
-							$row['media']	  		= $value2['images']['standard_resolution']['url'];
-							$row['waktu']   		= $value2['created_time'];
-							$row['source']  		= 'instagram';
-							$row['link']    		= $value2['link'];
+							$row['user_id'] 				= $value->id;
+							$row['konten']  				= '';
+							$row['media']	  				= $value2['images']['standard_resolution']['url'];
+							$row['waktu']   				= $value2['created_time'];
+							$row['source']  				= 'instagram';
+							$row['link']    				= $value2['link'];
 
 							if (isset($value2['caption']['text'])) 
 							{
-								$row['konten']  	= $value2['caption']['text'];
+								$row['konten']  			= $value2['caption']['text'];
 							}
 
 							#insert into db
@@ -229,16 +235,16 @@ class CronController extends Controller
 							#do checking, if time > latest time in db
 							if ($value2['created_time'] > $get_post[0]['waktu']) 
 							{
-								$row['user_id'] 		= $value->id;
-								$row['konten']  		= '';
-								$row['media']	  		= $value2['images']['standard_resolution']['url'];
-								$row['waktu']   		= $value2['created_time'];
-								$row['source']  		= 'instagram';
-								$row['link']    		= $value2['link'];
+								$row['user_id'] 			= $value->id;
+								$row['konten']  			= '';
+								$row['media']	  			= $value2['images']['standard_resolution']['url'];
+								$row['waktu']   			= $value2['created_time'];
+								$row['source']  			= 'instagram';
+								$row['link']    			= $value2['link'];
 
 								if (isset($value2['caption']['text'])) 
 								{
-									$row['konten']  	= $value2['caption']['text'];
+									$row['konten']  		= $value2['caption']['text'];
 								}
 
 								#insert into db
@@ -261,32 +267,32 @@ class CronController extends Controller
 		echo 'cron running.... <br>';
 
 		#create var for count 
-		$count 									= 0;
+		$count 												= 0;
 
 		#create var for time now
-		$now 									= time();
+		$now 												= time();
 
 		#get all access_token from db
-		$data['access_token'] 					= AccessTokenModel::all();
+		$data['access_token'] 								= AccessTokenModel::all();
 
 		foreach ($data['access_token'] as $key => $value) {
 
 				#get feed from db
-				$get_feed 						= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
+				$get_feed 									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','desc')->get();
 
 				#create var id
-				$id 							= [];
+				$id 										= [];
 
 				foreach ($get_feed as $key => $value2) 
 				{
 					#expire date for post (30 day)
-					$exp 						= strtotime(date('Y-m-d h:i:s',$value2->waktu). '+30 days');
+					$exp 									= strtotime(date('Y-m-d h:i:s',$value2->waktu). '+30 days');
 
 					#checking if expire date < now
 					if ($exp < $now) {
 
 						#push to var id
-						$id[]  					=  $value2->id;
+						$id[]  								=  $value2->id;
 
 						#incrementing count
 						$count++;
