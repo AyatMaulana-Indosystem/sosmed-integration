@@ -30,13 +30,13 @@ class Facebook_Controller extends Controller
 			if (count($cek) == 0) {
 
 				#Store Access Token
-				AccessTokenModel::create([
+				$insert 				= AccessTokenModel::create([
 					'value' 			=> $user['token'],
 					'type' 				=> 'facebook'
 				]);
 
 				#Get user_id from latest Access Token
-				$get_id 				= AccessTokenModel::where('value','=',$user['token'])->get();
+				$user_id 				= $insert->id;
 
 				#Get User Feed;
 				$obj 					= $this->get_feed($user['token']);
@@ -45,7 +45,7 @@ class Facebook_Controller extends Controller
 				foreach ($obj['data'] as $key => $value) {
 					$row = [];
 
-					$row['user_id'] 	= $get_id[0]->id;
+					$row['user_id'] 	= $user_id;
 					$row['post_id']		= $value['id'];
 					$row['waktu'] 		= strtotime($value['created_time']);
 					$row['source'] 		= 'facebook';
