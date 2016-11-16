@@ -28,7 +28,7 @@ class Instagram_Controller extends Controller
 	        'client_id'                =>     env('INSTAGRAM_CLIENT_ID'),
 	        'client_secret'            =>     env('INSTAGRAM_CLIENT_SECRET'),
 	        'grant_type'               =>     'authorization_code',
-	        'redirect_uri'             =>     env('INSTAGRAM_REDIRECT_URI'), //TODO: pindah ke .env
+	        'redirect_uri'             =>     env('INSTAGRAM_REDIRECT_URI'), 
 	        'code'                     =>     $_GET['code']
 	    );
 
@@ -65,6 +65,7 @@ class Instagram_Controller extends Controller
 					$row['waktu']   		= $value['created_time'];
 					$row['source']  		= 'instagram';
 					$row['link']    		= $value['link'];
+					$row['json']			= json_encode($value);
 
 					if (isset($value['caption']['text'])) 
 					{

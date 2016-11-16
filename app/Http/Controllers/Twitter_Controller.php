@@ -55,6 +55,7 @@ class Twitter_Controller extends Controller
 					$row['source']  		= 'twitter';
 					$row['link']			= 'http://twitter.com/'.$feed[0]->user->screen_name.'/status/'.$value->id;
 					$row['media']			= '';
+					$row['json']			= json_encode($value);
 
 					if (isset($value->entities->media)) {
 						$row['media']		=  $value->entities->media[0]->media_url;

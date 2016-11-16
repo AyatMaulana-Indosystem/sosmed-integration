@@ -46,6 +46,7 @@ class CronController extends Controller
 								$row['link'] 				= '';
 								$row['konten'] 				= '';
 								$row['media'] 				= '';
+								$row['json']				= json_encode($value2);
 
 								if (isset($value2['link'])) {
 									$row['link'] 			= $value2['link'];
@@ -86,6 +87,8 @@ class CronController extends Controller
 								$row['link'] 				= '';
 								$row['konten'] 				= '';
 								$row['media'] 				= '';
+								$row['json']				= json_encode($value2);
+
 
 								if (isset($value2['link'])) {
 									$row['link'] 			= $value2['link'];
@@ -138,6 +141,8 @@ class CronController extends Controller
 								$row['source']  			= 'twitter';
 								$row['link']				= 'http://twitter.com/'.$new_feed[0]->user->screen_name.'/status/'.$value2->id;
 								$row['media']				= '';
+								$row['json']				= json_encode($value2);
+
 
 								if (isset($value2->entities->media)) {
 									$row['media']			=  $value2->entities->media[0]->media_url;
@@ -169,6 +174,8 @@ class CronController extends Controller
 								$row['source']  			= 'twitter';
 								$row['link']				= 'http://twitter.com/'.$new_feed[0]->user->screen_name.'/status/'.$value2->id;
 								$row['media']				= '';
+								$row['json']				= json_encode($value2);
+
 
 								if (isset($value2->entities->media)) {
 									$row['media']			=  $value2->entities->media[0]->media_url;
@@ -210,6 +217,7 @@ class CronController extends Controller
 							$row['waktu']   				= $value2['created_time'];
 							$row['source']  				= 'instagram';
 							$row['link']    				= $value2['link'];
+							$row['json']					= json_encode($value2);
 
 							if (isset($value2['caption']['text'])) 
 							{
@@ -241,6 +249,8 @@ class CronController extends Controller
 								$row['waktu']   			= $value2['created_time'];
 								$row['source']  			= 'instagram';
 								$row['link']    			= $value2['link'];
+								$row['json']				= json_encode($value2);
+
 
 								if (isset($value2['caption']['text'])) 
 								{
