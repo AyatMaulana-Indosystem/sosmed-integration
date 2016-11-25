@@ -15,89 +15,107 @@ use App\SosmedModel;
 class Facebook_Controller extends Controller
 {
 	public function auth(){
-		if (isset($_GET['code'])) {
 
-			# get user info
-			$user 						= Socialite::driver('facebook')->user();
+		$check_token						= AccessTokenModel::where('type','=','facebook')->get();
 
-			#Get Long Access Token
-			$user 						= $this->getLongTokenAndUserInfo($user->token);
+		if (count($check_token) == 0) {
+
+			if (isset($_GET['code'])) {
+
+				# get user info
+				$user 						= Socialite::driver('facebook')->user();
+
+				#Get Long Access Token
+				$user 						= $this->getLongTokenAndUserInfo($user->token);
 
 
-			#Get Access Token from db
-			$cek 						= AccessTokenModel::where('value','=',$user['token'])->get();
+				#Get Access Token from db
+				$cek 						= AccessTokenModel::where('value','=',$user['token'])->get();
 
-			#If Access Token db = 0
-			if (count($cek) == 0) {
+				#If Access Token db = 0
+				if (count($cek) == 0) {
 
-				#Store Access Token
-				$insert 				= AccessTokenModel::create([
-					'value' 			=> $user['token']['access_token'],
-					'type' 				=> 'facebook',
-					'valid'				=> '1',
-					'valid_until'       => '',
-					'machine_id'        => $user['token']['machine_id']
-				]);
+					#Store Access Token
+					$insert 				= AccessTokenModel::create([
+						'value' 			=> $user['token']['access_token'],
+						'type' 				=> 'facebook',
+						'valid'				=> '1',
+						'valid_until'       => '',
+						'machine_id'        => $user['token']['machine_id'],
+						'json'				=> json_encode($user)
+					]);
 
-				#Get user_id from latest Access Token
-				$user_id 				= $insert->id;
+					#Get user_id from latest Access Token
+					$user_id 				= $insert->id;
 
-				#Get User Feed;
-				$obj 					= $this->get_feed($user['token']['access_token']);
+					#Get User Feed;
+					$obj 					= $this->get_feed($user['token']['access_token']);
 
-				#insert user feed to db
-				foreach ($obj['data'] as $key => $value) {
-					$row = [];
+					#insert user feed to db
+					foreach ($obj['data'] as $key => $value) {
+						$row = [];
 
-					$row['user_id'] 	= $user_id;
-					$row['post_id']		= $value['id'];
-					$row['waktu'] 		= strtotime($value['created_time']);
-					$row['source'] 		= 'facebook';
-					$row['link'] 		= '';
-					$row['konten'] 		= '';
-					$row['media'] 		= '';
-					$row['json']		= json_encode($value);
+						$row['user_id'] 	= $user_id;
+						$row['post_id']		= $value['id'];
+						$row['waktu'] 		= strtotime($value['created_time']);
+						$row['source'] 		= 'facebook';
+						$row['link'] 		= '';
+						$row['konten'] 		= '';
+						$row['media'] 		= '';
+						$row['json']		= json_encode($value);
 
-					if (isset($value['link'])) {
-						$row['link'] 	= $value['link'];
+						if (isset($value['link'])) {
+							$row['link'] 	= $value['link'];
+						}
+
+						if (isset($value['message'])) {
+							// $row['konten'] = stripcslashes(json_encode($value['message']));
+							$row['konten'] 	= $value['message'];
+						}
+
+						if (isset($value['attachments']['data'][0]['media']['image']['src'])) {
+							$row['media'] 	= $value['attachments']['data'][0]['media']['image']['src'];
+						}
+
+						#insert into db
+						SosmedModel::create($row);
 					}
-
-					if (isset($value['message'])) {
-						// $row['konten'] = stripcslashes(json_encode($value['message']));
-						$row['konten'] 	= $value['message'];
-					}
-
-					if (isset($value['attachments']['data'][0]['media']['image']['src'])) {
-						$row['media'] 	= $value['attachments']['data'][0]['media']['image']['src'];
-					}
-
-					#insert into db
-					SosmedModel::create($row);
 				}
+
+				#Put data into Session
+				Session::put('facebook',$user);
+
+				#Redirect to history
+				return Redirect::to('history');
 			}
+			else{
 
-			#Put data into Session
-			Session::put('facebook',$user);
-
-			#Redirect to history
-			return Redirect::to('history');
+				#Do facebook auth
+				return Socialite::driver('facebook')->scopes([
+					'email',
+					'publish_actions',
+					'user_about_me',
+					'user_likes',
+					'user_location',
+					'user_photos',
+					'user_posts',
+					'user_status',
+					'user_tagged_places',
+					'user_videos',
+					'pages_manage_instant_articles'
+				])->redirect();
+			}
 		}
 		else{
 
-			#Do facebook auth
-			return Socialite::driver('facebook')->scopes([
-				'email',
-				'publish_actions',
-				'user_about_me',
-				'user_likes',
-				'user_location',
-				'user_photos',
-				'user_posts',
-				'user_status',
-				'user_tagged_places',
-				'user_videos',
-				'pages_manage_instant_articles'
-			])->redirect();
+			$get_token  					= AccessTokenModel::where('type','=','facebook')->first();
+
+	    	$facebook_token 				= json_decode($get_token->json,TRUE);
+			
+			Session::put('facebook',$facebook_token);
+
+			#Redirect to root
+			return Redirect::to('/history');
 		}
 	}
 
