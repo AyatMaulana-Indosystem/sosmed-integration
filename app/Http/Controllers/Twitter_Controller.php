@@ -9,6 +9,7 @@ use App\SosmedModel;
 
 use Session;
 use Socialite;
+use Redirect;
 
 use Abraham\TwitterOAuth\TwitterOAuth;
 
@@ -16,7 +17,16 @@ class Twitter_Controller extends Controller
 {
 	#do auth
 	public function auth(){
-		return Socialite::driver('twitter')->redirect();
+		$check_token						= AccessTokenModel::where('type','=','twitter')->get();
+
+		if (count($check_token) == 0) {
+			return Socialite::driver('twitter')->redirect();
+		}
+		else{
+			Session::put('twitter',$check_token[0]->json);
+
+			return Redirect::to('/history');
+		}
 	}
 
 	#callback
@@ -40,7 +50,8 @@ class Twitter_Controller extends Controller
 				'type'  					=> 'twitter',
 				'valid'						=> '1',
 				'valid_until'       		=> '',
-				'machine_id'        		=> '' 
+				'machine_id'        		=> '',
+				'json'						=> json_encode($twitter_user),
 
 			]);
 
