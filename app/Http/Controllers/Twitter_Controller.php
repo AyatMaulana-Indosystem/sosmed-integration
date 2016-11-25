@@ -37,7 +37,9 @@ class Twitter_Controller extends Controller
 			#insert access_token into db
 			$insert 						= AccessTokenModel::create([
 				'value' 					=> $twitter_user->token.','.$twitter_user->tokenSecret,
-				'type'  					=> 'twitter'
+				'type'  					=> 'twitter',
+				'valid'						=> '',
+				'valid_until'       		=> ''
 			]);
 
 			#get user_id from db

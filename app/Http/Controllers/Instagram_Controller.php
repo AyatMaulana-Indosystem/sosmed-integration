@@ -21,7 +21,7 @@ class Instagram_Controller extends Controller
 		#instagram auth endpoint
 		// TODO: pindah ke .env
 		// TODO: sampai .com dan taruh di constant
-		$url 							= "https://api.instagram.com/oauth/access_token";
+		$url 							= env('INSTAGRAM_API')."oauth/access_token";
 	    
 		#params
 	    $access_token_parameters = array(
@@ -51,7 +51,9 @@ class Instagram_Controller extends Controller
 				#insert access_token into db
 				$insert 				= AccessTokenModel::create([
 					'type' 				=> 'instagram',
-					'value' 			=> $curl['access_token']
+					'value' 			=> $curl['access_token'],
+					'valid'				=> '',
+					'valid_until'       => ''
 				]);
 
 				#get user_id
@@ -91,7 +93,7 @@ class Instagram_Controller extends Controller
 
 	public static function get_feed($token)
 	{
-		    $url 						= 'https://api.instagram.com/v1/users/self/media/recent?access_token='.$token;
+		    $url 						= env('INSTAGRAM_API').'v1/users/self/media/recent?access_token='.$token;
 		    $obj 						= json_decode(file_get_contents($url), true);	
 
 		    return $obj;
