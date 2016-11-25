@@ -100,17 +100,28 @@
             @endif
 
                         @if(Session::has('twitter'))
+                          @if (Session::has('twitter')['token'])
+                            <?php  
+                              $avatar = Session::get('twitter')['avatar'];
+                              $nickname = Session::get('twitter')['nickname'];
+                            ;?>
+                          @else
+                            <?php  
+                              $avatar = Session::get('twitter')->avatar;
+                              $nickname = Session::get('twitter')->nickname;
+                            ;?>
+                          @endif
               <div class="col-md-4">
                 <div class="card card-mini">
                   <div class="card-header text-center">
                     Twitter
                   </div>
                   <div class="card-body text-center">
-                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="{{ Session::get('twitter')->avatar }}">
+                    <img class="profile-img" style="width:100px;height:100px;border-radius:100px" src="{{ $avatar }} ">
                     <div class="app-title">
                       {{-- <div class="title"><span class="highlight">Ayat Maulana</span></div> --}}
                       <br>
-                      <h4 class="media-heading"><a href="{{ url('/history') }}">{{ Session::get('twitter')->nickname }}</a></h4>
+                      <h4 class="media-heading"><a href="{{ url('/history') }}">{{ $nickname }}</a></h4>
                       <br>
                       <span class="badge badge-success badge-icon"><i class="fa fa-circle" aria-hidden="true"></i><span>Connected</span></span>
                     </div>

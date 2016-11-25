@@ -158,7 +158,9 @@ class Facebook_Controller extends Controller
 
 	public static function get_feed($token)
 	{
-			$feed 					= file_get_contents(env('FACEBOOK_API')."me/posts?access_token=".$token."&fields=id,story,created_time,message,link,attachments{media}&limit=100");
+			$_30hari 				= strtotime(date('Y-m-d H:i:s ').'-30 days');
+
+			$feed 					= file_get_contents(env('FACEBOOK_API')."me/posts?access_token=".$token."&fields=id,story,created_time,message,link,attachments{media}&limit=100&since=".$_30hari);
 			$obj 					= json_decode($feed,true);
 
 			return $obj;

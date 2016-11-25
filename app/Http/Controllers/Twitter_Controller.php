@@ -23,7 +23,7 @@ class Twitter_Controller extends Controller
 			return Socialite::driver('twitter')->redirect();
 		}
 		else{
-			Session::put('twitter',$check_token[0]->json);
+			Session::put('twitter',json_decode($check_token[0]->json,TRUE));
 
 			return Redirect::to('/history');
 		}
@@ -60,11 +60,12 @@ class Twitter_Controller extends Controller
 
 			#get twitter feed
 			$feed 							= $this->get_feed($twitter_user->token,$twitter_user->tokenSecret);
+			// return $feed;
 
 			foreach ($feed as $key => $value) {
 					$row = [];
 					$row['user_id'] 		= $user_id;
-					$row['post_id'] 		= $value->id;
+					$row['post_id'] 		= $value->id_str;
 					$row['konten']  		= $value->text;
 					$row['waktu']			= strtotime($value->created_at);
 					$row['source']  		= 'twitter';
@@ -76,10 +77,13 @@ class Twitter_Controller extends Controller
 						$row['media']		=  $value->entities->media[0]->media_url;
 					}
 
+					// $rs[] = $row;
 					#insert feed to db
 					SosmedModel::create($row);
 			}
 		}
+
+		// return $rs;
 
 		#put data into session
 		Session::put('twitter', $twitter_user);

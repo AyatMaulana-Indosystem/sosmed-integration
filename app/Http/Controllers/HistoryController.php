@@ -51,7 +51,13 @@ class HistoryController extends Controller
 		}
 
 		if (Session::has('twitter')) {
-			$token = Session::get('twitter')->token.','.Session::get('twitter')->tokenSecret;
+			if (isset(Session::get('twitter')['token'])) {
+				$token = Session::get('twitter')['token'].','.Session::get('twitter')['tokenSecret'];
+			}
+			else{
+				$token = Session::get('twitter')->token.','.Session::get('twitter')->tokenSecret;
+			}
+
 			$data_access = AccessTokenModel::where('value','=',$token)->get();
 
 			$data_temp['twitter'] 	= SosmedModel::where('user_id','=',$data_access[0]->id)->get();
