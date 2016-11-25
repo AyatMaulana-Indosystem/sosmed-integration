@@ -18,42 +18,45 @@ class Instagram_Controller extends Controller
 {
 	public function auth(){
 
-		#instagram auth endpoint
-		// TODO: pindah ke .env
-		// TODO: sampai .com dan taruh di constant
-		$url 							= env('INSTAGRAM_API')."oauth/access_token";
-	    
-		#params
-	    $access_token_parameters = array(
-	        'client_id'                =>     env('INSTAGRAM_CLIENT_ID'),
-	        'client_secret'            =>     env('INSTAGRAM_CLIENT_SECRET'),
-	        'grant_type'               =>     'authorization_code',
-	        'redirect_uri'             =>     env('INSTAGRAM_REDIRECT_URI'), 
-	        'code'                     =>     $_GET['code']
-	    );
+		$check_token						= AccessTokenModel::where('type','=','instagram')->get();
 
-	    #do auth
-		$curl 							= CurlController::get($url, $access_token_parameters, TRUE);
+		if (count($check_token) == 0) {
+	
+			#instagram auth endpoint
+			$url 							= env('INSTAGRAM_API')."oauth/access_token";
+		    
+			#params
+		    $access_token_parameters = array(
+		        'client_id'                =>     env('INSTAGRAM_CLIENT_ID'),
+		        'client_secret'            =>     env('INSTAGRAM_CLIENT_SECRET'),
+		        'grant_type'               =>     'authorization_code',
+		        'redirect_uri'             =>     env('INSTAGRAM_REDIRECT_URI'), 
+		        'code'                     =>     $_GET['code']
+		    );
 
-		#if auth success and have access token
-	    if (isset($curl['access_token'])) 
-	                                                                                                      {
+		    #do auth
+			$curl 							= CurlController::get($url, $access_token_parameters, TRUE);
+		
+			// return $curl;
 
-	    	#get access token in db
-			$cek 						= AccessTokenModel::where('value','=',$curl['access_token'])->get();
+			#if auth success and have access token
+		    if (isset($curl['access_token'])) 
+		                                                                                                      {
 
-			#get user feed
-		    $obj 						= $this->get_feed($curl['access_token']);
+		    	#get access token in db
+				$cek 						= AccessTokenModel::where('value','=',$curl['access_token'])->get();
 
-		    #if access_token in db = 0
-			if (count($cek) == 0) 
-			{
+				#get user feed
+			    $obj 						= $this->get_feed($curl['access_token']);
+				
 				#insert access_token into db
 				$insert 				= AccessTokenModel::create([
 					'type' 				=> 'instagram',
 					'value' 			=> $curl['access_token'],
-					'valid'				=> '',
-					'valid_until'       => ''
+					'valid'				=> '1',
+					'valid_until'       => '',
+					'machine_id'        => '',
+					'json'				=> json_encode($curl) 
 				]);
 
 				#get user_id
@@ -77,17 +80,23 @@ class Instagram_Controller extends Controller
 					#insert feed into db
 					SosmedModel::create($row);
 				}
-			}
-
 			#put data into session
 			Session::put('instagram',$curl);
 
 			#Redirect to history
 			return Redirect::to('/history');
-	    }
+			}
+		}
 	    else{
+
+	    	$get_token  					= AccessTokenModel::where('type','=','instagram')->first();
+
+	    	$instagram_token 				= json_decode($get_token->json,TRUE);
+			
+			Session::put('instagram',$instagram_token);
+
 			#Redirect to root
-			return Redirect::to('/');
+			return Redirect::to('/history');
 	    }
 	}
 
