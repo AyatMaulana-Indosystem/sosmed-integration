@@ -316,8 +316,8 @@ class CronController extends Controller
 
 	public function feed_facebook($token, $since)
 	{
-			$feed 					= file_get_contents(env('FACEBOOK_API')."me/posts?access_token=".$token."&fields=id,story,created_time,message,link,attachments{media}&limit=100&since=".$since);
-			$obj 					= json_decode($feed,true);
+			$feed 											= file_get_contents(env('FACEBOOK_API')."me/posts?access_token=".$token."&fields=id,story,created_time,message,link,attachments{media}&limit=100&since=".$since);
+			$obj 											= json_decode($feed,true);
 
 			return $obj;
 	}
@@ -325,7 +325,7 @@ class CronController extends Controller
 	public function feed_twitter($token,$tokenSecret,$since_id)
 	{
 			#set params to get twiter_feed
-			$twitterOAuth 					= new TwitterOAuth(
+			$twitterOAuth 									= new TwitterOAuth(
 				env('TWITTER_CONSUMER_KEY'),
 				env('TWITTER_SECRET_KEY'),
 				$token,

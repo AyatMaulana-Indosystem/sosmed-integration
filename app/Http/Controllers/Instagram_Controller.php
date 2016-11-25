@@ -18,8 +18,10 @@ class Instagram_Controller extends Controller
 {
 	public function auth(){
 
+		#get facebook token
 		$check_token						= AccessTokenModel::where('type','=','instagram')->get();
 
+		#if token = 0
 		if (count($check_token) == 0) {
 	
 			#instagram auth endpoint
@@ -80,6 +82,7 @@ class Instagram_Controller extends Controller
 					#insert feed into db
 					SosmedModel::create($row);
 				}
+
 			#put data into session
 			Session::put('instagram',$curl);
 
@@ -89,10 +92,13 @@ class Instagram_Controller extends Controller
 		}
 	    else{
 
+	    	#get token
 	    	$get_token  					= AccessTokenModel::where('type','=','instagram')->first();
 
+	    	#decode json
 	    	$instagram_token 				= json_decode($get_token->json,TRUE);
 			
+			#put into session
 			Session::put('instagram',$instagram_token);
 
 			#Redirect to root
@@ -102,7 +108,10 @@ class Instagram_Controller extends Controller
 
 	public static function get_feed($token)
 	{
+			#url
 		    $url 						= env('INSTAGRAM_API').'v1/users/self/media/recent?access_token='.$token;
+		    
+		    #decode json
 		    $obj 						= json_decode(file_get_contents($url), true);	
 
 		    return $obj;

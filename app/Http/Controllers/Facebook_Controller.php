@@ -16,10 +16,13 @@ class Facebook_Controller extends Controller
 {
 	public function auth(){
 
+		#get facebook token
 		$check_token						= AccessTokenModel::where('type','=','facebook')->get();
 
+		#if facebook token = 0
 		if (count($check_token) == 0) {
 
+			#if has $_GET['code']
 			if (isset($_GET['code'])) {
 
 				# get user info
@@ -108,10 +111,13 @@ class Facebook_Controller extends Controller
 		}
 		else{
 
+			#get facebook token
 			$get_token  					= AccessTokenModel::where('type','=','facebook')->first();
 
+			#json encode facebook token
 	    	$facebook_token 				= json_decode($get_token->json,TRUE);
 			
+			#put into session
 			Session::put('facebook',$facebook_token);
 
 			#Redirect to root
@@ -158,9 +164,13 @@ class Facebook_Controller extends Controller
 
 	public static function get_feed($token)
 	{
+			#30 hari
 			$_30hari 				= strtotime(date('Y-m-d H:i:s ').'-30 days');
 
+			#get feed
 			$feed 					= file_get_contents(env('FACEBOOK_API')."me/posts?access_token=".$token."&fields=id,story,created_time,message,link,attachments{media}&limit=100&since=".$_30hari);
+
+			#json decode 
 			$obj 					= json_decode($feed,true);
 
 			return $obj;
