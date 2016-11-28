@@ -10,6 +10,7 @@ use App\SosmedModel;
 use App\Http\Controllers\Instagram_Controller;
 use App\Http\Controllers\Facebook_Controller;
 use App\Http\Controllers\Twitter_Controller;
+use App\Http\Controllers\ValidasiController;
 
 use Abraham\TwitterOAuth\TwitterOAuth;
 
@@ -17,6 +18,7 @@ class CronController extends Controller
 {
 	public function update()
 	{
+
 		$count				 								= 0;
 
 		#get all access_token from db
@@ -27,49 +29,55 @@ class CronController extends Controller
 			#If Facebook Access Token
 			if ($value->type == 'facebook')
 			{
-				#get new feed from db
-				$get_post									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','DESC')->first();
-				
-				#get new feed
-				$new_feed									= $this->feed_facebook($value->value, $get_post->waktu);
+				#validasi token
+				$validasi_token								= ValidasiController::facebook_token_validation($value->value);
 
-				#if new feed from db = 0 row
-				if (count($get_post) == 0 || count($get_post) == null) 
-				{
-					foreach ($new_feed['data'] as $key => $value2) 
+				#cek if token validate
+				if ($validasi_token) {
+
+					#get new feed from db
+					$get_post									= SosmedModel::where('user_id','=',$value->id)->orderBy('waktu','DESC')->first();
+					
+					#get new feed
+					$new_feed									= $this->feed_facebook($value->value, $get_post->waktu);
+
+					#if new feed from db = 0 row
+					if (count($get_post) == 0 || count($get_post) == null) 
 					{
-						#if new feed time > tomorrow
-						if (strtotime($value2['created_time']) > strtotime(date('Y-m-d h:i:s'). "-1 days") ) {
-								$row = [];
-								$row['user_id'] 			= $value->id;
-								$row['waktu'] 				= strtotime($value2['created_time']);
-								$row['source'] 				= 'facebook';
-								$row['link'] 				= '';
-								$row['konten'] 				= '';
-								$row['media'] 				= '';
-								$row['json']				= json_encode($value2);
+						foreach ($new_feed['data'] as $key => $value2) 
+						{
+							#if new feed time > tomorrow
+							if (strtotime($value2['created_time']) > strtotime(date('Y-m-d h:i:s'). "-1 days") ) {
+									$row = [];
+									$row['user_id'] 			= $value->id;
+									$row['waktu'] 				= strtotime($value2['created_time']);
+									$row['source'] 				= 'facebook';
+									$row['link'] 				= '';
+									$row['konten'] 				= '';
+									$row['media'] 				= '';
+									$row['json']				= json_encode($value2);
 
-								if (isset($value2['link'])) {
-									$row['link'] 			= $value2['link'];
-								}
+									if (isset($value2['link'])) {
+										$row['link'] 			= $value2['link'];
+									}
 
-								if (isset($value2['message'])) {
-									$row['konten'] 			= $value2['message'];
-								}
+									if (isset($value2['message'])) {
+										$row['konten'] 			= $value2['message'];
+									}
 
-								if (isset($value2['attachments']['data'][0]['media']['image']['src'])) {
-									$row['media'] 			= $value2['attachments']['data'][0]['media']['image']['src'];
-								}
+									if (isset($value2['attachments']['data'][0]['media']['image']['src'])) {
+										$row['media'] 			= $value2['attachments']['data'][0]['media']['image']['src'];
+									}
 
-								#insert into db
-								SosmedModel::create($row);
+									#insert into db
+									SosmedModel::create($row);
 
-								$count++;
-						}
-					}	
-				}
-				else
-				{
+									$count++;
+							}
+						}	
+					}
+					else
+					{
 
 						foreach ($new_feed['data'] as $key => $value2) {
 
@@ -104,8 +112,9 @@ class CronController extends Controller
 
 							$count++;
 						}
-
+					}
 				}
+
 			}
 
 			#If Twitter Access Token
