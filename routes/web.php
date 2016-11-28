@@ -6,21 +6,21 @@ Route::get('/', function () {
 
 
 // history
-Route::get('/history','HistoryController@index');
+Route::get('/history',					'HistoryController@index');
 
 // Instagram
-Route::get('/auth_instagram', 'Instagram_Controller@auth');
+Route::get('/auth_instagram', 			'Instagram_Controller@auth');
 
 // Facebook
-Route::get('/auth_facebook','Facebook_Controller@auth');
-Route::get('/auth_facebook/callback','Facebook_Controller@callback');
+Route::get('/auth_facebook',			'Facebook_Controller@auth');
+Route::get('/auth_facebook/callback',	'Facebook_Controller@callback');
 
 // Twitter
-Route::get('/auth_twitter','Twitter_Controller@auth');
-Route::get('/auth_twitter/callback','Twitter_Controller@callback');
+Route::get('/auth_twitter',				'Twitter_Controller@auth');
+Route::get('/auth_twitter/callback',	'Twitter_Controller@callback');
 
 // Logout
-Route::get('/logout/{sosmed}','LogoutController@logout');
+Route::get('/logout/{sosmed}',			'LogoutController@logout');
 
 
 

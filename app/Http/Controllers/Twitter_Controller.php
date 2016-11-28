@@ -9,6 +9,7 @@ use App\SosmedModel;
 
 use Session;
 use Socialite;
+use Redirect;
 
 use Abraham\TwitterOAuth\TwitterOAuth;
 
@@ -16,7 +17,16 @@ class Twitter_Controller extends Controller
 {
 	#do auth
 	public function auth(){
-		return Socialite::driver('twitter')->redirect();
+		$check_token						= AccessTokenModel::where('type','=','twitter')->get();
+
+		if (count($check_token) == 0) {
+			return Socialite::driver('twitter')->redirect();
+		}
+		else{
+			Session::put('twitter',json_decode($check_token[0]->json,TRUE));
+
+			return Redirect::to('/history');
+		}
 	}
 
 	#callback
@@ -35,21 +45,27 @@ class Twitter_Controller extends Controller
 		if (count($cek) == 0) {
 
 			#insert access_token into db
-			AccessTokenModel::create([
+			$insert 						= AccessTokenModel::create([
 				'value' 					=> $twitter_user->token.','.$twitter_user->tokenSecret,
-				'type'  					=> 'twitter'
+				'type'  					=> 'twitter',
+				'valid'						=> '1',
+				'valid_until'       		=> '',
+				'machine_id'        		=> '',
+				'json'						=> json_encode($twitter_user),
+
 			]);
 
 			#get user_id from db
-			$get_id 						= AccessTokenModel::where('value','=',$twitter_user->token.','.$twitter_user->tokenSecret)->get();
+			$user_id 						= $insert->id;
 
 			#get twitter feed
 			$feed 							= $this->get_feed($twitter_user->token,$twitter_user->tokenSecret);
+			// return $feed;
 
 			foreach ($feed as $key => $value) {
 					$row = [];
-					$row['user_id'] 		= $get_id[0]->id;
-					$row['post_id'] 		= $value->id;
+					$row['user_id'] 		= $user_id;
+					$row['post_id'] 		= $value->id_str;
 					$row['konten']  		= $value->text;
 					$row['waktu']			= strtotime($value->created_at);
 					$row['source']  		= 'twitter';
@@ -61,10 +77,13 @@ class Twitter_Controller extends Controller
 						$row['media']		=  $value->entities->media[0]->media_url;
 					}
 
+					// $rs[] = $row;
 					#insert feed to db
 					SosmedModel::create($row);
 			}
 		}
+
+		// return $rs;
 
 		#put data into session
 		Session::put('twitter', $twitter_user);

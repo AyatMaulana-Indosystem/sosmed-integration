@@ -18,48 +18,55 @@ class Instagram_Controller extends Controller
 {
 	public function auth(){
 
-		#instagram auth endpoint
-		// TODO: pindah ke .env
-		// TODO: sampai .com dan taruh di constant
-		$url 							= "https://api.instagram.com/oauth/access_token";
-	    
-		#params
-	    $access_token_parameters = array(
-	        'client_id'                =>     env('INSTAGRAM_CLIENT_ID'),
-	        'client_secret'            =>     env('INSTAGRAM_CLIENT_SECRET'),
-	        'grant_type'               =>     'authorization_code',
-	        'redirect_uri'             =>     env('INSTAGRAM_REDIRECT_URI'), 
-	        'code'                     =>     $_GET['code']
-	    );
+		#get facebook token
+		$check_token						= AccessTokenModel::where('type','=','instagram')->get();
 
-	    #do auth
-		$curl 							= CurlController::get($url, $access_token_parameters, TRUE);
+		#if token = 0
+		if (count($check_token) == 0) {
+	
+			#instagram auth endpoint
+			$url 							= env('INSTAGRAM_API')."oauth/access_token";
+		    
+			#params
+		    $access_token_parameters = array(
+		        'client_id'                =>     env('INSTAGRAM_CLIENT_ID'),
+		        'client_secret'            =>     env('INSTAGRAM_CLIENT_SECRET'),
+		        'grant_type'               =>     'authorization_code',
+		        'redirect_uri'             =>     env('INSTAGRAM_REDIRECT_URI'), 
+		        'code'                     =>     $_GET['code']
+		    );
 
-		#if auth success and have access token
-	    if (isset($curl['access_token'])) 
-	                                                                                                      {
+		    #do auth
+			$curl 							= CurlController::get($url, $access_token_parameters, TRUE);
+		
+			// return $curl;
 
-	    	#get access token in db
-			$cek 						= AccessTokenModel::where('value','=',$curl['access_token'])->get();
+			#if auth success and have access token
+		    if (isset($curl['access_token'])) 
+		                                                                                                      {
 
-			#get user feed
-		    $obj 						= $this->get_feed($curl['access_token']);
+		    	#get access token in db
+				$cek 						= AccessTokenModel::where('value','=',$curl['access_token'])->get();
 
-		    #if access_token in db = 0
-			if (count($cek) == 0) 
-			{
+				#get user feed
+			    $obj 						= $this->get_feed($curl['access_token']);
+				
 				#insert access_token into db
-				AccessTokenModel::create([
+				$insert 				= AccessTokenModel::create([
 					'type' 				=> 'instagram',
-					'value' 			=> $curl['access_token']
+					'value' 			=> $curl['access_token'],
+					'valid'				=> '1',
+					'valid_until'       => '',
+					'machine_id'        => '',
+					'json'				=> json_encode($curl) 
 				]);
 
 				#get user_id
-				$get_id 				= AccessTokenModel::where('value','=',$curl['access_token'])->get();
+				$user_id 				= $insert->id;
 
 				foreach ($obj['data'] as $key => $value) {
 
-					$row['user_id'] 		= $get_id[0]->id;
+					$row['user_id'] 		= $user_id;
 					$row['konten']  		= '';
 					$row['media']	  		= $value['images']['standard_resolution']['url'];
 					$row['waktu']   		= $value['created_time'];
@@ -75,23 +82,36 @@ class Instagram_Controller extends Controller
 					#insert feed into db
 					SosmedModel::create($row);
 				}
-			}
 
 			#put data into session
 			Session::put('instagram',$curl);
 
 			#Redirect to history
 			return Redirect::to('/history');
-	    }
+			}
+		}
 	    else{
+
+	    	#get token
+	    	$get_token  					= AccessTokenModel::where('type','=','instagram')->first();
+
+	    	#decode json
+	    	$instagram_token 				= json_decode($get_token->json,TRUE);
+			
+			#put into session
+			Session::put('instagram',$instagram_token);
+
 			#Redirect to root
-			return Redirect::to('/');
+			return Redirect::to('/history');
 	    }
 	}
 
 	public static function get_feed($token)
 	{
-		    $url 						= 'https://api.instagram.com/v1/users/self/media/recent?access_token='.$token;
+			#url
+		    $url 						= env('INSTAGRAM_API').'v1/users/self/media/recent?access_token='.$token;
+		    
+		    #decode json
 		    $obj 						= json_decode(file_get_contents($url), true);	
 
 		    return $obj;
