@@ -17,7 +17,7 @@ use Abraham\TwitterOAuth\TwitterOAuth;
 class CronController extends Controller
 {
 	public function update()
-	{
+	{	
 
 		$count				 								= 0;
 
@@ -29,6 +29,7 @@ class CronController extends Controller
 			#If Facebook Access Token
 			if ($value->type == 'facebook')
 			{
+
 				#validasi token
 				$validasi_token								= ValidasiController::facebook_token_validation($value->value);
 
@@ -113,6 +114,20 @@ class CronController extends Controller
 							$count++;
 						}
 					}
+				}
+				else
+				{
+					// regenerate token
+					$regenerate_token						= Facebook_Controller::facebook_token_regenerate($value->value);
+
+					// replace old token with new token
+					AccessTokenModel::where('type','=','facebook')->update([
+						'value' 		=> $regenerate_token['access_token'],
+						'machine_id'	=> $regenerate_token['machine_id']
+					]);
+
+					echo 'Token Regenerate';
+
 				}
 
 			}
